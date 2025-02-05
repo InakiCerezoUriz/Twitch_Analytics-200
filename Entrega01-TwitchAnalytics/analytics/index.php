@@ -18,13 +18,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET')
       $ch = curl_init($api_url);
       curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-      curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 
       $response = curl_exec($ch);
       $res = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-      
+
       curl_close($ch);
+
+      header('Content-Type: application/json');
 
       switch ($res){
         case 200:
@@ -49,9 +49,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET')
           echo json_encode("error: Internal Server error.", JSON_PRETTY_PRINT);
           break;
       }
-      
+
       exit();
     }
-    
+    header("HTTP/1.1 400 Bad Request");
+    header('Content-Type: application/json');
+    echo json_encode("error: Invalid or missing 'id' parameter.", JSON_PRETTY_PRINT);
 }
 ?>
