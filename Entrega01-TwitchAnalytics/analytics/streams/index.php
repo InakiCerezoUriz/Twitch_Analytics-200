@@ -6,26 +6,25 @@
         'Client-Id: pdp08hcdlqz3u2l18wz5eeu6kyll93',  // Client ID de la aplicación de twitch
         'Content-Type: application/json',
     ];
-    
+
     if (!isset($_GET['id'])){
       $api_url = 'https://api.twitch.tv/helix/streams';
       $ch = curl_init($api_url);
       curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-      curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 
       $response = curl_exec($ch);
       $res = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-      
+
       curl_close($ch);
+      header('Content-Type: application/json; Charset: UTF-8');
 
       switch ($res){
         case 200:
           header("HTTP/1.1 200 Ok");
           $data = json_decode($response, true);
           #Obetener del data los datos que queremos (title, user_name)
-          for( $i = 0; $i < count($data); $i++ ){
+          for( $i = 0; $i < count($data['data']); $i++ ){
             $title = $data['data'][$i]['title'];
             $user_name = $data['data'][$i]['user_name'];
             $lista[$i] = [
