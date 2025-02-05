@@ -8,21 +8,17 @@
         'Client-Id: pdp08hcdlqz3u2l18wz5eeu6kyll93',  // Client ID de la aplicación de twitch
         'Content-Type: application/json',
     ];
-    
+
     if (isset($_GET['limit'])){
       $ch = curl_init($api_url);
       curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-      #Configuracion SSL
-      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-      curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-
       $response = curl_exec($ch);
       $res = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-      
-      curl_close($ch);
 
+      curl_close($ch);
+      header('Content-Type: application/json');
       switch ($res){
         case 200:
           header("HTTP/1.1 200 Ok");
@@ -35,13 +31,11 @@
             $ch = curl_init($api_url);
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
             $response = curl_exec($ch);
             $res = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             curl_close($ch);
             $data_user = json_decode($response, true);
-            
+
 
 
             #Formar el array con los datos que queremos
@@ -80,5 +74,9 @@
 
       exit();
     }
+    header('Content-Type: application/json');
+    header("HTTP/1.1 400 Bad Request");
+    echo json_encode("error: Invalid 'limit' parameter.", JSON_PRETTY_PRINT);
+
 
 ?>
