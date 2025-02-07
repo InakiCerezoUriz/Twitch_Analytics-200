@@ -28,6 +28,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET')
 
       switch ($res){
         case 200:
+          if($response == '"data": []'){
+            header("HTTP/1.1 404 Not Found");
+            echo json_encode("error: User not found.", JSON_PRETTY_PRINT);
+          }
           header("HTTP/1.1 200 Ok");
           $data = json_decode($response, true);
           echo json_encode($data, JSON_PRETTY_PRINT);
@@ -39,10 +43,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET')
         case 401:
           header("HTTP/1.1 401 Unauthorized");
           echo json_encode("error: Unauthorized. Twitch access token is invalid or has expired.", JSON_PRETTY_PRINT);
-          break;
-        case 404:
-          header("HTTP/1.1 404 Not Found");
-          echo json_encode("error: User not found.", JSON_PRETTY_PRINT);
           break;
         case 500:
           header("HTTP/1.1 500 Internal Server Error");
