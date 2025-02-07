@@ -26,3 +26,6 @@ http://localhost:PUERTO/Entrega01-TwitchAnalytics/analytics/streams
   
 http://localhost:PUERTO/Entrega01-TwitchAnalytics/analytics/streams/enriched?limit=TU_LIMIT_DE_EJEMPLO
 
+#### Caso ded uso 4 - Consultar documentación del API
+
+http://localhost:PUERTO/Entrega01-TwitchAnalytics/analytics/documentation
