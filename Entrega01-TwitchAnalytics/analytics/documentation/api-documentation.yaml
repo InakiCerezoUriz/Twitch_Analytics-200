@@ -1,0 +1,122 @@
+openapi: 3.0.0
+info:
+  title: Twitch Analytics API
+  description: API para obtener datos de usuarios y streams de Twitch.
+  version: 1.0.0
+servers:
+  - url: http://13.60.56.25/analytics
+paths:
+  /user:
+    get:
+      summary: Obtener información de un usuario por ID.
+      description: Devuelve los datos de un usuario de Twitch según su ID.
+      parameters:
+        - name: id
+          in: query
+          required: true
+          description: El ID del usuario a consultar.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ok.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      login:
+                        type: string
+                      display_name:
+                        type: string
+                      type:
+                        type: string
+                      broadcaster_type:
+                        type: string
+                      description:
+                        type: string
+                      profile_image_url:
+                        type: string
+                      offline_image_url:
+                        type: string
+                      created_at:
+                        type: string
+        '400':
+          description: Invalid or missing 'id' parameter.
+        '401':
+          description: Unautorized. Twitch access token is invalid or has expired.
+        '404':
+          description: User not fund.
+        '500':
+          description: Internal server error.
+          
+  /streams:
+    get:
+      summary: Obtener lista de streams activos.
+      description: Devuelve una lista de streams activos en Twitch.
+      responses:
+        '200':
+          description: Ok.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    title:
+                      type: string
+                    user_name:
+                      type: string
+        '401':
+          description: Unautorized. Twitch access token is invalid or has expired.
+        '500':
+          description: Internal server error.
+
+  /streams/enriched:
+    get:
+      summary: Obtener información enriquecida de streams.
+      description: Devuelve una lista de streams activos con información adicional del usuario.
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          description: El número máximo de streams a devolver.
+          schema:
+            type: integer
+            default: 3
+      responses:
+        '200':
+          description: Información enriquecida de streams obtenida correctamente.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    stream_id:
+                      type: string
+                    user_id:
+                      type: string
+                    user_name:
+                      type: string
+                    viewer_count:
+                      type: integer
+                    title:
+                      type: string
+                    user_display_name:
+                      type: string
+                    profile_image_url:
+                      type: string
+        '400':
+          description: Invalid 'limit' parameter.
+        '401':
+          description: Unautorized. Twitch access token is invalid or has expired.
+        '500':
+          description: Internal server error.
