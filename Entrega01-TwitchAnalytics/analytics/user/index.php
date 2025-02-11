@@ -42,8 +42,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET')
           }
           else{
             header("HTTP/1.1 200 Ok");
-            echo json_encode($data, JSON_PRETTY_PRINT);
-          }          
+            $user = json_encode($data['data'][0], JSON_PRETTY_PRINT);
+            echo $user; 
+          }        
           break;
         case 400:
           header("HTTP/1.1 400 Bad Request");
