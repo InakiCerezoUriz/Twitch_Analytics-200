@@ -13,6 +13,10 @@
     3. Subir archivos a la carpeta /VAR/WWW/HTML del servidor local
     4. Abrir en un navegador localhost:PUERTO/Entrega01-TwitchAnalytics/analytics/...
 
+### Ejecutar en producción
+    
+    Para poder ejecutar ejecutar las llamadas en producción hay que utilizar el link http://http://13.60.56.25/analytics/...
+
 ### Opciones de respuesta Api
 ##### Caso de uso 1 - Consultar información de un streamer
   
