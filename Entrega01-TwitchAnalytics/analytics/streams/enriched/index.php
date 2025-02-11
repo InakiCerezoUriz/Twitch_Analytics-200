@@ -14,6 +14,19 @@
     ];
 
     if (isset($_GET['limit'])){
+
+      // Validar que 'limit' sea un número entero válido y esté en el rango adecuado
+      $limit = filter_var($_GET['limit'], FILTER_VALIDATE_INT);
+
+      if ($limit === false || $limit <= 0 || $limit > 20) {
+         header("HTTP/1.1 400 Bad Request");
+         header('Content-Type: application/json');
+         echo json_encode(
+                     ["error" => " Invalid 'limit' parameter."
+         ]);
+         exit();
+     }
+
       $ch = curl_init($api_url);
       curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -69,15 +82,15 @@
           break;
         case 400:
           header("HTTP/1.1 400 Bad Request");
-          echo json_encode("error: Invalid 'limit' parameter.", JSON_PRETTY_PRINT);
+          echo json_encode(['error' => "Invalid or missing 'limit' parameter."], JSON_PRETTY_PRINT);
           break;
         case 401:
           header("HTTP/1.1 401 Unauthorized");
-          echo json_encode("error: Unauthorized. Twitch access token is invalid or has expired.", JSON_PRETTY_PRINT);
+          echo json_encode(['error' =>  "Unauthorized. Twitch access token is invalid or has expired."], JSON_PRETTY_PRINT);
           break;
         case 500:
           header("HTTP/1.1 500 Internal Server Error");
-          echo json_encode("error: Internal Server error.", JSON_PRETTY_PRINT);
+          echo json_encode(['error' =>  "Internal Server error."], JSON_PRETTY_PRINT);
           break;
       }
 

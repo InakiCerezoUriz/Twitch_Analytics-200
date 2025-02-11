@@ -46,11 +46,11 @@
           break;
         case 401:
           header("HTTP/1.1 401 Unauthorized");
-          echo json_encode("error: Unauthorized. Twitch access token is invalid or has expired.", JSON_PRETTY_PRINT);
+          echo json_encode(['error' =>  "Unauthorized. Twitch access token is invalid or has expired."], JSON_PRETTY_PRINT);
           break;
         case 500:
           header("HTTP/1.1 500 Internal Server Error");
-          echo json_encode("error: Internal Server error.", JSON_PRETTY_PRINT);
+          echo json_encode(['error' =>  "Internal Server error."], JSON_PRETTY_PRINT);
           break;
       }
 

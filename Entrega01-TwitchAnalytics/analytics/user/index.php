@@ -6,12 +6,12 @@ $api_url = 'https://api.twitch.tv/helix/users?id=';
 
 $token = conseguirToken();
 
-    #Conseguir el token con curl haciendo una petición POST para logearse
-    $headers = [
-        "Authorization: Bearer $token",  // Token
-        'Client-Id: pdp08hcdlqz3u2l18wz5eeu6kyll93',  // Client ID de la aplicación de twitch
-        'Content-Type: application/json',
-    ];
+#Conseguir el token con curl haciendo una petición POST para logearse
+$headers = [
+    "Authorization: Bearer $token",  // Token
+    'Client-Id: pdp08hcdlqz3u2l18wz5eeu6kyll93',  // Client ID de la aplicación de twitch
+    'Content-Type: application/json',
+];
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET')
 {
@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET')
         case 200:
           if(empty($data['data'])){
             header("HTTP/1.1 404 Not Found");
-            echo json_encode("error: User not found.", JSON_PRETTY_PRINT);
+            echo json_encode(['error' => "User not found."], JSON_PRETTY_PRINT);
           }
           else{
             header("HTTP/1.1 200 Ok");
@@ -47,15 +47,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET')
           break;
         case 400:
           header("HTTP/1.1 400 Bad Request");
-          echo json_encode("error: Invalid or missing 'id' parameter.", JSON_PRETTY_PRINT);
+          echo json_encode(['error' => "Invalid or missing 'id' parameter."], JSON_PRETTY_PRINT);
           break;
         case 401:
           header("HTTP/1.1 401 Unauthorized");
-          echo json_encode("error: Unauthorized. Twitch access token is invalid or has expired.", JSON_PRETTY_PRINT);
+          echo json_encode(['error' =>  "Unauthorized. Twitch access token is invalid or has expired."], JSON_PRETTY_PRINT);
           break;
         case 500:
           header("HTTP/1.1 500 Internal Server Error");
-          echo json_encode("error: Internal Server error.", JSON_PRETTY_PRINT);
+          echo json_encode(['error' =>  "Internal Server error."], JSON_PRETTY_PRINT);
           break;
       }
 
