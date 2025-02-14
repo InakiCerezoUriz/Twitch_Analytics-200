@@ -1,8 +1,24 @@
 <?php
 
 require_once './funcionesAuxiliares/conseguirToken.php';
+require_once './funcionesAuxiliares/comprobarExpiracion.php';
 
 function getStreams() {
+  if (!isset($_SERVER['HTTP_AUTHORIZATION'])) {
+    header("HTTP/1.1 400 Bad Request");
+    echo json_encode(['error' => "Authorization header is missing."], JSON_PRETTY_PRINT);
+    exit();
+  }
+
+  $authHeader = $_SERVER['HTTP_AUTHORIZATION'];
+  $token = str_replace('Bearer ', '', $authHeader);
+  
+  if(!comprobarExpiracion($token)) {
+    header("HTTP/1.1 401 Unauthorized");
+    echo json_encode(['error' => "Unauthorized. Token is invalid or has expired."], JSON_PRETTY_PRINT);
+    return;
+  }
+
   $token = conseguirToken();
 
   $headers = [

@@ -1,7 +1,7 @@
 <?php
 
 include_once 'funcionesAuxiliares/conectarBBDD.php';
-include './funcionesAuxiliares/generarToken.php';
+include_once './funcionesAuxiliares/generarToken.php';
 
 function token($email, $api_key) {
     $db = conectarBBDD();

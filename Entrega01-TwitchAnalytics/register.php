@@ -1,7 +1,7 @@
 <?php
 
-include './funcionesAuxiliares/conectarBBDD.php';
-include './funcionesAuxiliares/generarApiKey.php';
+include_once './funcionesAuxiliares/conectarBBDD.php';
+include_once './funcionesAuxiliares/generarApiKey.php';
 
 function register($email) {
 
