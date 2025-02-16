@@ -4,7 +4,7 @@ include_once 'funcionesAuxiliares/conectarBBDD.php';
 require_once './funcionesAuxiliares/conseguirToken.php';
 require_once './funcionesAuxiliares/comprobarExpiracion.php';
 
-function getTopsOfTops($since) {
+function getTopOfTops($since) {
     if (!isset($_SERVER['HTTP_AUTHORIZATION'])) {
         header("HTTP/1.1 400 Bad Request");
         echo json_encode(['error' => "Authorization header is missing."], JSON_PRETTY_PRINT);
@@ -32,7 +32,7 @@ function getTopsOfTops($since) {
     if(empty($_GET['since'])) {
       $since = 600;
     }
-    elseif {
+    else {
       $since = filter_var($_GET['since'], FILTER_VALIDATE_INT);
       if ($since === false) {
         header("HTTP/1.1 400 Bad Request");
@@ -66,14 +66,17 @@ function getTopsOfTops($since) {
           header("HTTP/1.1 200 Ok");
           header('Content-Type: application/json');
           $data = json_decode($response, true);
+          echo json_encode($data);
           // Introducir datos en BBDD
+          $db = conectarBBDD();
           for($i = 0; $i < 3; $i++) {
-            $game_id = $data['data'][$i]['game_id'];
-            $game_name = $data['data'][$i]['game_name'];
+            $game_id = $data['data'][$i]['id'];
+            $game_name = $data['data'][$i]['name'];
             $ultima_solicitud = date('Y-m-d H:i:s');
             $insertStmt = $db->prepare("INSERT INTO cache (game_id, game_name, ultima_solicitud) VALUES (:game_id, :game_name, :ultima_solicitud)");
             $insertStmt->bindValue(':game_id', $game_id, PDO::PARAM_STR);
             $insertStmt->bindValue(':game_name', $game_name, PDO::PARAM_STR);
+            $insertStmt->bindValue(':ultima_solicitud', $ultima_solicitud, PDO::PARAM_STR);
             $insertStmt->execute();
           }
 
