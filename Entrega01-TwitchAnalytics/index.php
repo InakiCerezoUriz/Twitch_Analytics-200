@@ -11,28 +11,31 @@ header('Content-Type: application/json');
 
 if ($_SERVER['SERVER_NAME'] == 'localhost') {
     switch ($uri) {
-        case "/Entrega01-TwitchAnalytics/index.php/analytics/user":
+        case "/VyV-200/Twitch_Analytics-200/Entrega01-TwitchAnalytics/index.php/analytics/user":
             getUserById($_GET['id']);
             break;
-        case "/Entrega01-TwitchAnalytics/index.php/analytics/streams":
+        case "/VyV-200/Twitch_Analytics-200/Entrega01-TwitchAnalytics/index.php/analytics/streams":
             getStreams();
             break;
-        case "/index.php/analytics/streams/enriched":
+        case "/VyV-200/Twitch_Analytics-200/Entrega01-TwitchAnalytics/index.php/analytics/streams/enriched":
             getEnrichedStreams($_GET['limit']);
             break;
-        case "/Entrega01-TwitchAnalytics/index.php/analytics/register":
+        case "/VyV-200/Twitch_Analytics-200/Entrega01-TwitchAnalytics/index.php/analytics/register":
             $body = file_get_contents('php://input');
             $data = json_decode($body, true);
             $email = $data['email'];
             register($email);
             break;
-        case "/Entrega01-TwitchAnalytics/index.php/token":
+        case "/VyV-200/Twitch_Analytics-200/Entrega01-TwitchAnalytics/index.php/token":
             $body = file_get_contents('php://input');
             $data = json_decode($body, true);
             $email = $data['email'];
             $api_key = $data['api_key'];
             token($email, $api_key);
             break;
+        case "/VyV-200/Twitch_Analytics-200/Entrega01-TwitchAnalytics/index.php/analytics/topsofthetops":
+            getTopOfTops($_GET['since']);
+            break
     }
 } else{
     switch ($uri) {
@@ -59,6 +62,9 @@ if ($_SERVER['SERVER_NAME'] == 'localhost') {
             $api_key = $data['api_key'];
             token($email, $api_key);
             break;
+        case "/analytics/topsofthetops":
+            getTopOfTops($_GET['since']);
+            break
     }
 }
 
