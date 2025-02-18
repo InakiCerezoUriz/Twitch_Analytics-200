@@ -21,7 +21,7 @@ switch ($uri) {
     case "/analytics/streams/enriched":
         getEnrichedStreams($_GET['limit']);
         break;
-    case "/analytics/register":
+    case "/register":
         $body = file_get_contents('php://input');
         $data = json_decode($body, true);
         $email = $data['email'];
