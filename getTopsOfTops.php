@@ -69,16 +69,49 @@ function getTopOfTops($since) {
           echo json_encode($data);
           // Introducir datos en BBDD
           $db = conectarBBDD();
+          // FALTA VACIAR LA TABLA
           for($i = 0; $i < 3; $i++) {
             $game_id = $data['data'][$i]['id'];
             $game_name = $data['data'][$i]['name'];
-            $ultima_solicitud = date('Y-m-d H:i:s');
-            $insertStmt = $db->prepare("INSERT INTO cache (game_id, game_name, ultima_solicitud) VALUES (:game_id, :game_name, :ultima_solicitud)");
-            $insertStmt->bindValue(':game_id', $game_id, PDO::PARAM_STR);
-            $insertStmt->bindValue(':game_name', $game_name, PDO::PARAM_STR);
-            $insertStmt->bindValue(':ultima_solicitud', $ultima_solicitud, PDO::PARAM_STR);
-            $insertStmt->execute();
+            // llamada a la segunda API 
+            $api_url = "https://api.twitch.tv/helix/videos?game_id=$game_id&first=40&sort=views"
+            $ch = curl_init($api_url);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+            if ($_SERVER['SERVER_NAME'] == 'localhost') {
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+            }
+            
+            $response = curl_exec($ch);
+            $res = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+
+            $game_data = json_decode($response, true);
+            for($j = 0;$j < 40; $j++){
+              $user_name = $data['data'][$j]['user_name'];
+              $title = $data['data'][$j]['title'];
+              $views = $data['data'][$j]['view_cout'];
+              $duration = $data['data'][$j]['duration'];
+              $createrd_at = $data['data'][$j]['created_at'];
+              $ultima_solicitud = date('Y-m-d H:i:s');
+              $insertStmt = $db->prepare("INSERT INTO cache (game_id, game_name, ultima_solicitud, user_name, title, views, duration, created_at) VALUES (:game_id, :game_name, :ultima_solicitud, :user_name, :title, :views, :duration, :created_at)");
+              $insertStmt->bindValue(':game_id', $game_id, PDO::PARAM_STR);
+              $insertStmt->bindValue(':game_name', $game_name, PDO::PARAM_STR);
+              $insertStmt->bindValue(':ultima_solicitud', $ultima_solicitud, PDO::PARAM_STR);
+              $insertStmt->bindValue(':user_name', $user_name, PDO::PARAM_STR);
+              $insertStmt->bindValue(':title', $title, PDO::PARAM_STR);
+              $insertStmt->bindValue(':views', $views, PDO::PARAM_STR);
+              $insertStmt->bindValue(':duration', $duration, PDO::PARAM_STR);
+              $insertStmt->bindValue(':created_at', $created_at, PDO::PARAM_STR);
+              $insertStmt->execute();
+            }
           }
+          $selectStmt = $db->prepare("SELECT COUNT(DISTINCT(user_name) FROM cache GROUP BY game_id");
+          $numero_respuestas = $selectStmt->exetute();
+
+          echo $numero_respuestas;
 
           break;
         case 401:
