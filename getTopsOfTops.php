@@ -5,20 +5,7 @@ require_once './funcionesAuxiliares/conseguirToken.php';
 require_once './funcionesAuxiliares/comprobarExpiracion.php';
 
 function getTopOfTops($since) {
-    if (!isset($_SERVER['HTTP_AUTHORIZATION'])) {
-        header("HTTP/1.1 400 Bad Request");
-        echo json_encode(['error' => "Authorization header is missing."], JSON_PRETTY_PRINT);
-        exit();
-    }
     
-    $authHeader = $_SERVER['HTTP_AUTHORIZATION'];
-    $token = str_replace('Bearer ', '', $authHeader);
-      
-    if(!comprobarExpiracion($token)) {
-        header("HTTP/1.1 401 Unauthorized");
-        echo json_encode(['error' => "Unauthorized. Token is invalid or has expired."], JSON_PRETTY_PRINT);
-        return;
-    }
 
     $token = conseguirToken();
 
@@ -66,15 +53,15 @@ function getTopOfTops($since) {
           header("HTTP/1.1 200 Ok");
           header('Content-Type: application/json');
           $data = json_decode($response, true);
-          echo json_encode($data);
           // Introducir datos en BBDD
           $db = conectarBBDD();
+          $db->exec("DELETE FROM cache"); 
           // FALTA VACIAR LA TABLA
           for($i = 0; $i < 3; $i++) {
             $game_id = $data['data'][$i]['id'];
             $game_name = $data['data'][$i]['name'];
             // llamada a la segunda API 
-            $api_url = "https://api.twitch.tv/helix/videos?game_id=$game_id&first=40&sort=views"
+            $api_url = "https://api.twitch.tv/helix/videos?game_id=$game_id&first=40&sort=views";
             $ch = curl_init($api_url);
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -90,11 +77,11 @@ function getTopOfTops($since) {
 
             $game_data = json_decode($response, true);
             for($j = 0;$j < 40; $j++){
-              $user_name = $data['data'][$j]['user_name'];
-              $title = $data['data'][$j]['title'];
-              $views = $data['data'][$j]['view_cout'];
-              $duration = $data['data'][$j]['duration'];
-              $createrd_at = $data['data'][$j]['created_at'];
+              $user_name = $game_data['data'][$j]['user_name'];
+              $title = $game_data['data'][$j]['title'];
+              $views = $game_data['data'][$j]['view_count'];
+              $duration = $game_data['data'][$j]['duration'];
+              $created_at = $game_data['data'][$j]['created_at'];
               $ultima_solicitud = date('Y-m-d H:i:s');
               $insertStmt = $db->prepare("INSERT INTO cache (game_id, game_name, ultima_solicitud, user_name, title, views, duration, created_at) VALUES (:game_id, :game_name, :ultima_solicitud, :user_name, :title, :views, :duration, :created_at)");
               $insertStmt->bindValue(':game_id', $game_id, PDO::PARAM_STR);
@@ -108,10 +95,9 @@ function getTopOfTops($since) {
               $insertStmt->execute();
             }
           }
-          $selectStmt = $db->prepare("SELECT COUNT(DISTINCT(user_name) FROM cache GROUP BY game_id");
-          $numero_respuestas = $selectStmt->exetute();
-
-          echo $numero_respuestas;
+          $selectStmt = $db->prepare("SELECT DISTINCT user_name FROM CACHE");
+          $selectStmt->execute();
+          $nombres = $selectStmt->fetchAll(PDO::FETCH_ASSOC);
 
           break;
         case 401:
