@@ -3,6 +3,7 @@
 include 'getUserById.php';
 include 'getStreams.php';
 include 'getEnrichedStreams.php';
+include 'getTopsOfTops.php';
 include 'register.php';
 include 'token.php';
 
@@ -10,32 +11,71 @@ header('Content-Type: application/json');
 
 $basePath = $_SERVER['SCRIPT_NAME'];
 $uri = str_replace($basePath, "", strtok($_SERVER["REQUEST_URI"], '?'));
+$uri = str_replace('/VyV-200', '', $uri);
 
 switch ($uri) {
     case "/analytics/user":
-        getUserById($_GET['id']);
+        if (empty($_GET['id'])){
+            header("HTTP/1.1 400 Bad Request");
+            header('Content-Type: application/json');
+            echo json_encode(
+                        ["error" => " Invalid 'id' parameter."
+            ]);
+            exit();
+        } else{
+            getUserById($_GET['id']);
+        }
         break;
     case "/analytics/streams":
         getStreams();
         break;
     case "/analytics/streams/enriched":
-        getEnrichedStreams($_GET['limit']);
+        if (empty($_GET['limit']) || $_GET['limit'] <= 0 || $_GET['limit'] > 20) {
+            header("HTTP/1.1 400 Bad Request");
+            header('Content-Type: application/json');
+            echo json_encode(
+                        ["error" => " Invalid 'limit' parameter."
+            ]);
+            exit();
+        } else {
+            getEnrichedStreams($_GET['limit']);
+        }
         break;
     case "/register":
         $body = file_get_contents('php://input');
         $data = json_decode($body, true);
-        $email = $data['email'];
-        register($email);
+        if (empty($data['email'])) {
+            header("HTTP/1.1 400 Bad Request");
+            echo json_encode(['error' => "The email is mandatory"], JSON_PRETTY_PRINT);
+            return;
+        } else {
+            register($data['email']);
+        }
         break;
     case "/token":
         $body = file_get_contents('php://input');
         $data = json_decode($body, true);
-        $email = $data['email'];
-        $api_key = $data['api_key'];
-        token($email, $api_key);
+        if (empty($data['email'])) {
+            header("HTTP/1.1 400 Bad Request");
+            echo json_encode(['error' => "The email is mandatory"], JSON_PRETTY_PRINT);
+            return;
+        } else if (empty($data['api_key'])) {
+            header("HTTP/1.1 400 Bad Request");
+            echo json_encode(['error' => "The api_key is mandatory"], JSON_PRETTY_PRINT);
+            return;
+
+        } else {
+            $email = $data['email'];
+            $api_key = $data['api_key'];
+            token($email, $api_key);
+        }
         break;
     case "/analytics/topsofthetops":
-        getTopOfTops($_GET['since']);
+        if (isset($_GET['since'])) {
+            getTopOfTops($_GET['since']);
+        } else {
+            getTopOfTops(600);
+        }
         break;
     default:
         header("HTTP/1.1 404 Not Found");
