@@ -4,9 +4,18 @@ info:
   description: API para obtener datos de usuarios y streams de Twitch.
   version: 1.0.0
 servers:
-  - url: http://13.60.56.25/analytics
+  - url: http://13.60.56.25
+    description: Servidor de producción
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: Bearer
+      berarerFormat: JWT
+security:
+  - bearerAuth: []
 paths:
-  /user:
+  /analytics/user:
     get:
       summary: Obtener información de un usuario por ID.
       description: Devuelve los datos de un usuario de Twitch según su ID.
@@ -55,7 +64,7 @@ paths:
         '500':
           description: Internal server error.
           
-  /streams:
+  /analytics/streams:
     get:
       summary: Obtener lista de streams activos.
       description: Devuelve una lista de streams activos en Twitch.
@@ -78,7 +87,7 @@ paths:
         '500':
           description: Internal server error.
 
-  /streams/enriched:
+  /analytics/streams/enriched:
     get:
       summary: Obtener información enriquecida de streams.
       description: Devuelve una lista de streams activos con información adicional del usuario.
@@ -120,3 +129,183 @@ paths:
           description: Unautorized. Twitch access token is invalid or has expired.
         '500':
           description: Internal server error.
+  /register:
+    post:
+      summary: Registrarse en la API
+      requestBody:
+        description: Datos para el registro del usuario
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: usuario@example.com
+              required:
+                - email
+      responses:
+        '200':
+          description: Registro exitoso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  api_key:
+                    type: string
+                    example: "abcd1234efgh5678"
+          examples:
+            nuevo_registro:
+              summary: Registro nuevo exitoso
+              value:
+                api_key: "abcd1234efgh5678"
+            email_existente:
+              summary: Registro exitoso con email existente
+              value:
+                api_key: "asdfasdfqwerqwer"
+        '400':
+          description: Solicitud incorrecta
+          content:
+            application/json:
+              examples:
+                email_invalido:
+                  summary: Email no válido
+                  value:
+                    error: "The email must be a valid email address"
+                email_faltante:
+                  summary: Email no proporcionado
+                  value:
+                    error: "The email is mandatory"
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              example:
+                error: "Internal server error."
+  /token:
+    post:
+      summary: Obtener un token de sesión
+      requestBody:
+        description: Datos para obtener un token de sesión
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: usuario@example.com
+                api_key:
+                  type: string
+                  example: abcd1234efgh5678
+              required:
+                - email
+                - api_key
+      responses:
+        '200':
+          description: Token generado exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: "generated_token"
+        '400':
+          description: Solicitud incorrecta
+          content:
+            application/json:
+              examples:
+                email_invalido:
+                  summary: Email no válido
+                  value:
+                    error: "The email must be a valid email address"
+                email_faltante:
+                  summary: Email no proporcionado
+                  value:
+                    error: "The email is mandatory"
+                api_key_faltante:
+                  summary: API Key no proporcionada
+                  value:
+                    error: "The api_key is mandatory"
+        '401':
+          description: No autorizado
+          content:
+            application/json:
+              example:
+                error: "Unauthorized. API access token is invalid."
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              example:
+                error: "Internal server error."
+  /analytics/topsofthetops:
+    get:
+      summary: Obtener información sobre los videos más vistos de los tres juegos más populares
+      parameters:
+        - in: query
+          name: since
+          schema:
+            type: integer
+          required: false
+          description: Parámetro opcional para filtrar streams desde cierta fecha en segundos
+      responses:
+        '200':
+          description: Respuesta exitosa
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    game_id:
+                      type: string
+                    game_name:
+                      type: string
+                    user_name:
+                      type: string
+                    total_videos:
+                      type: integer
+                    total_views:
+                      type: integer
+                    most_viewed_title:
+                      type: string
+                    most_viewed_views:
+                      type: integer
+                    most_viewed_duration:
+                      type: string
+                    most_viewed_created_at:
+                      type: string
+                      format: date-time
+        '400':
+          description: Solicitud incorrecta
+          content:
+            application/json:
+              example:
+                error: "Bad Request. Invalid or missing parameters."
+        '401':
+          description: No autorizado
+          content:
+            application/json:
+              example:
+                error: "Unauthorized. Token is invalid or expired."
+        '404':
+          description: No se encontraron datos
+          content:
+            application/json:
+              example:
+                error: "Not Found. No data available."
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              example: 
+                error: "Internal server error. Please try again later."
