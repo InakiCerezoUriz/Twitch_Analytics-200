@@ -151,6 +151,9 @@ function getTopOfTops($since) {
         $selectStmt->bindValue(":user_name", $nombres[$k]['user_name'], PDO::PARAM_STR);
         $selectStmt->execute();
         while ($tops = $selectStmt->fetch(PDO::FETCH_ASSOC)) {
+          foreach ($tops as $key => $value) {
+            $tops[$key] = (string)$value;
+          }
           $final[] = $tops;
         }
       }
