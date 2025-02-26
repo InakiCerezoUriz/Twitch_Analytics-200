@@ -88,6 +88,8 @@ function getUserById($id) {
         echo json_encode(['error' => "Internal Server error."], JSON_PRETTY_PRINT);
         break;
     }
+  } else{
+    echo json_encode($result, JSON_PRETTY_PRINT);
   }
 }
 ?>
