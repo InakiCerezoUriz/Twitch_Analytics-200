@@ -1,0 +1,10 @@
+grumphp:
+    tasks:
+        phpcs:
+            standard: [PSR12]
+        phpmd:
+            whitelist_patterns: [ ]
+            exclude: [ ]
+            report_format: text
+            ruleset: [ 'cleancode', 'codesize', 'naming' ]
+            triggered_by: [ 'php' ]
