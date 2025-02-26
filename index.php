@@ -6,6 +6,7 @@ include 'getEnrichedStreams.php';
 include 'getTopsOfTops.php';
 include 'register.php';
 include 'token.php';
+include 'getTopsOfTopsNuevo.php';
 
 header('Content-Type: application/json');
 
@@ -75,6 +76,13 @@ switch ($uri) {
             getTopOfTops($_GET['since']);
         } else {
             getTopOfTops(600);
+        }
+        break;
+    case "/analytics/nuevo":
+        if (isset($_GET['since'])) {
+            getTopOfTopsNuevo($_GET['since']);
+        } else {
+            getTopOfTopsNuevo(600);
         }
         break;
     default:
