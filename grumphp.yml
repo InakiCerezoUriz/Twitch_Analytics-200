@@ -14,3 +14,4 @@ grumphp:
             max_body_width: 0
             matchers:
                 message: /^\[#\d+\] - [A-Z][a-z0-9 ]*$/
+        phpcsfixer:
