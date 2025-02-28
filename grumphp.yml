@@ -8,4 +8,4 @@ grumphp:
             report_format: text
             ruleset: [ 'cleancode', 'codesize', 'naming' ]
             triggered_by: [ 'php' ]
-            standard: [PSR12]
+        phpcsfixer:
