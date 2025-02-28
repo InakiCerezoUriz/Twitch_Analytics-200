@@ -8,4 +8,10 @@ grumphp:
             report_format: text
             ruleset: [ 'cleancode', 'codesize', 'naming' ]
             triggered_by: [ 'php' ]
+        git_commit_message:
+            enforce_capitalized_subject: false
+            max_subject_width: 0
+            max_body_width: 0
+            matchers:
+                message: /^\[#\d+\] - [A-Z][a-z0-9 ]*$/
         phpcsfixer:
