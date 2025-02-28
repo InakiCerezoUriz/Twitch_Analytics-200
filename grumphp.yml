@@ -1,13 +1,9 @@
 grumphp:
     tasks:
         phpcs:
-            standard: [PSR12]
+            standard: ['phpcs.xml']
         phpmd:
-            whitelist_patterns: [ ]
-            exclude: [ ]
-            report_format: text
-            ruleset: [ 'cleancode', 'codesize', 'naming' ]
-            triggered_by: [ 'php' ]
+            ruleset: [ 'phpmd-ruleset.xml' ]
         git_commit_message:
             enforce_capitalized_subject: false
             max_subject_width: 0
