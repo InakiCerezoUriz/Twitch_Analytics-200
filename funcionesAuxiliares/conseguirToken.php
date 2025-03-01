@@ -1,6 +1,7 @@
 <?php
 
-function conseguirToken() {
+function conseguirToken()
+{
     $api_url = 'https://id.twitch.tv/oauth2/token';
     $client_id = "pdp08hcdlqz3u2l18wz5eeu6kyll93";
     $client_secret = "yzefb8wctntjt757lhvp6atbx3hu9k";
@@ -35,5 +36,3 @@ function conseguirToken() {
         return "Error al obtener el token: " . $response;
     }
 }
-
-?>
