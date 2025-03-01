@@ -8,5 +8,9 @@
         "allow-plugins": {
             "phpro/grumphp": true
         }
-    }
+    },
+  "require": {
+    "ext-pdo": "*",
+    "ext-curl": "*"
+  }
 }
