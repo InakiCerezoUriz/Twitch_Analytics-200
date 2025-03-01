@@ -1,6 +1,9 @@
 <?php
 
-function conectarBBDD() {
+use PDO;
+
+function conectarBBDD(): ?PDO
+{
     $host = 'cah8ha8ra8h8i7.cluster-czz5s0kz4scl.eu-west-1.rds.amazonaws.com';
     $port = '5432';
     $dbname = 'dd2e5fnppcb8fb';
@@ -23,5 +26,3 @@ function conectarBBDD() {
         return null;
     }
 }
-?>
-

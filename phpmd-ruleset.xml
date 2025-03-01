@@ -15,14 +15,4 @@
         <exclude name="LongVariable"/>
         <exclude name="LongClassName"/>
     </rule>
-    <rule ref="rulesets/namig.xml/ShortVariable"
-        since="0.2"
-        message="Avoid variables with short names like {0}. Configured minimum length is {1}."
-        class="PHPMD\Rule\Namig\ShortVariable"
-        externalInfoUrl="http://phpmd.org/rules/namign.html#shortvariable">
-        <priority>3</priority>
-        <properties>
-            <property name="minimum" value="2"/>
-        </properties>
-    </rule>
 </ruleset>
