@@ -9,24 +9,24 @@ function getUserById($id): void
     comprobarAuthorization();
 
     $authHeader = $_SERVER['HTTP_AUTHORIZATION'];
-    $token = str_replace('Bearer ', '', $authHeader);
+    $token      = str_replace('Bearer ', '', $authHeader);
 
     if (!comprobarExpiracion($token)) {
-        header("HTTP/1.1 401 Unauthorized");
-        echo json_encode(['error' => "Unauthorized. Token is invalid or has expired."], JSON_PRETTY_PRINT);
+        header('HTTP/1.1 401 Unauthorized');
+        echo json_encode(['error' => 'Unauthorized. Token is invalid or has expired.'], JSON_PRETTY_PRINT);
         return;
     }
 
-  // Comprobar si el usuario a consultar esta en la base de datos o no
-    $db = conectarBBDD();
-    $sql = $db->prepare("SELECT * FROM users WHERE id = :id");
+    // Comprobar si el usuario a consultar esta en la base de datos o no
+    $db  = conectarBBDD();
+    $sql = $db->prepare('SELECT * FROM users WHERE id = :id');
     $sql->bindParam(':id', $id, PDO::PARAM_STR);
     $sql->execute();
     $result = $sql->fetch(PDO::FETCH_ASSOC);
 
     if (empty($result)) {
         $api_url = 'https://api.twitch.tv/helix/users?id=' . $id;
-        $token = conseguirToken();
+        $token   = conseguirToken();
 
         $headers = [
         "Authorization: Bearer $token",  // Token
@@ -44,7 +44,7 @@ function getUserById($id): void
         }
 
         $response = curl_exec($ch);
-        $res = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $res      = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
         curl_close($ch);
 
@@ -53,19 +53,19 @@ function getUserById($id): void
         switch ($res) {
             case 200:
                 if (empty($data['data'])) {
-                    header("HTTP/1.1 404 Not Found");
-                    echo json_encode(['error' => "User not found."], JSON_PRETTY_PRINT);
+                    header('HTTP/1.1 404 Not Found');
+                    echo json_encode(['error' => 'User not found.'], JSON_PRETTY_PRINT);
                 } else {
-                    header("HTTP/1.1 200 Ok");
+                    header('HTTP/1.1 200 Ok');
                     $user = json_encode($data['data'][0], JSON_PRETTY_PRINT);
                     $stmt = $db->prepare(
-                        "INSERT INTO users (
+                        'INSERT INTO users (
                                     id, login, display_name, type, broadcaster_type, description, 
                                     profile_image_url, offline_image_url, view_count, created_at
                                 ) VALUES (
                                     :id, :login, :display_name, :type, :broadcaster_type, :description, 
                                     :profile_image_url, :offline_image_url, :view_count, :created_at
-                                )"
+                                )'
                     );
                     $stmt->bindParam(':id', $data['data'][0]['id'], PDO::PARAM_STR);
                     $stmt->bindParam(':login', $data['data'][0]['login'], PDO::PARAM_STR);
@@ -83,16 +83,16 @@ function getUserById($id): void
                 }
                 break;
             case 400:
-                header("HTTP/1.1 400 Bad Request");
+                header('HTTP/1.1 400 Bad Request');
                 echo json_encode(['error' => "Invalid or missing 'id' parameter."], JSON_PRETTY_PRINT);
                 break;
             case 401:
-                header("HTTP/1.1 401 Unauthorized");
-                echo json_encode(['error' => "Unauthorized. Twitch access token is invalid or has expired."], JSON_PRETTY_PRINT);
+                header('HTTP/1.1 401 Unauthorized');
+                echo json_encode(['error' => 'Unauthorized. Twitch access token is invalid or has expired.'], JSON_PRETTY_PRINT);
                 break;
             case 500:
-                header("HTTP/1.1 500 Internal Server Error");
-                echo json_encode(['error' => "Internal Server error."], JSON_PRETTY_PRINT);
+                header('HTTP/1.1 500 Internal Server Error');
+                echo json_encode(['error' => 'Internal Server error.'], JSON_PRETTY_PRINT);
                 break;
         }
     } else {
