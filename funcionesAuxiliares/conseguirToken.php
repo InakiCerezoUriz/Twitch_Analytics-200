@@ -1,7 +1,16 @@
 <?php
 
-function conseguirToken()
-{
+function conseguirToken() {
+    $db = conectarBBDD();
+    $stmt = $db->prepare("SELECT * FROM token_twitch LIMIT 1");
+    $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    $ultima_solicitud = strtotime($result['expiracion']);
+    $current_time = time();
+    if (isset($result['token']) && $ultima_solicitud > $current_time) {
+        return $result['token'];
+    }
+
     $api_url = 'https://id.twitch.tv/oauth2/token';
     $client_id = "pdp08hcdlqz3u2l18wz5eeu6kyll93";
     $client_secret = "yzefb8wctntjt757lhvp6atbx3hu9k";
@@ -12,6 +21,7 @@ function conseguirToken()
         'client_secret' => $client_secret,
         'grant_type' => 'client_credentials'
     ]);
+
 
     $ch = curl_init($api_url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -28,14 +38,8 @@ function conseguirToken()
 
     // Decodificar la respuesta JSON
     $data = json_decode($response, true);
-
     // Retornar el token obtenido o un mensaje de error
     if (isset($data['access_token'])) {
-        $db = conectarBBDD();
-        $stmt = $db->prepare("SELECT * FROM token_twitch LIMIT 1");
-        $stmt->execute();
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
         if (!empty($result)) {
             $stmt = $db->prepare("UPDATE token_twitch SET token = :token, expiracion = :expiracion");
         } else {
