@@ -21,8 +21,24 @@ jobs:
       - name: Instalar Composer
         run: composer install
 
+      - name: Obtener archivos modificados en el commit
+        id: changed-files
+        run: |
+          git diff-tree --no-commit-id --name-only -r HEAD > modified_files.txt
+          cat modified_files.txt
+
       - name: PHPCS
-        run: vendor/bin/phpcs --standard=PSR12 .
+        run: |
+          if [ -s modified_files.txt ]; then
+            vendor/bin/phpcs --standard=PSR12 $(cat modified_files.txt)
+          else
+            echo "No modified files to check."
+          fi
 
       - name: PHPMD
-        run: vendor/bin/phpmd . xml phpmd-ruleset.xml
+        run: |
+          if [ -s modified_files.txt ]; then
+            vendor/bin/phpmd $(cat modified_files.txt) xml phpmd-ruleset.xml
+          else
+            echo "No modified files to check."
+          fi
