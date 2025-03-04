@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.1'
+
+    - name: Install Composer dependencies
+      run: composer install
+
+    - name: Run PHPCS
+      run: vendor/bin/phpcs --standard=PSR12 .
+
+    - name: Run PHPMD
+      run: vendor/bin/phpmd . xml phpmd-ruleset.xml
