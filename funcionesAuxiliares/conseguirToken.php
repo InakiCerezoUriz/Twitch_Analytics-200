@@ -1,6 +1,7 @@
 <?php
 
-function conseguirToken() {
+function conseguirToken()
+{
     $api_url = 'https://id.twitch.tv/oauth2/token';
     $client_id = "pdp08hcdlqz3u2l18wz5eeu6kyll93";
     $client_secret = "yzefb8wctntjt757lhvp6atbx3hu9k";
@@ -30,10 +31,22 @@ function conseguirToken() {
 
     // Retornar el token obtenido o un mensaje de error
     if (isset($data['access_token'])) {
+        $db = conectarBBDD();
+        $stmt = $db->prepare("SELECT * FROM token_twitch LIMIT 1");
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!empty($result)) {
+            $stmt = $db->prepare("UPDATE token_twitch SET token = :token, expiracion = :expiracion");
+        } else {
+            $stmt = $db->prepare("INSERT INTO token_twitch (token, expiracion) VALUES (:token, :expiracion)");
+        }
+        $stmt->bindValue(':token', $data['access_token'], PDO::PARAM_STR);
+        $stmt->bindValue(':expiracion', date("Y-m-d H:i:s", strtotime("+60 days")), PDO::PARAM_STR);
+        $stmt->execute();
+
         return $data['access_token'];
     } else {
         return "Error al obtener el token: " . $response;
     }
 }
-
-?>
