@@ -1,5 +1,6 @@
 <?php
 
+
 function conseguirToken() {
     $db = conectarBBDD();
     $stmt = $db->prepare("SELECT * FROM token_twitch LIMIT 1");
@@ -10,7 +11,7 @@ function conseguirToken() {
     if (isset($result['token']) && $ultima_solicitud > $current_time) {
         return $result['token'];
     }
-    
+
     $api_url = 'https://id.twitch.tv/oauth2/token';
     $client_id = "pdp08hcdlqz3u2l18wz5eeu6kyll93";
     $client_secret = "yzefb8wctntjt757lhvp6atbx3hu9k";
@@ -39,5 +40,3 @@ function conseguirToken() {
     // Decodificar la respuesta JSON
     $data = json_decode($response, true);
 }
-
-?>
