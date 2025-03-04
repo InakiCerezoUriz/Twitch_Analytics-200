@@ -1,6 +1,5 @@
 <?php
 
-
 function conseguirToken() {
     $db = conectarBBDD();
     $stmt = $db->prepare("SELECT * FROM token_twitch LIMIT 1");
@@ -39,4 +38,19 @@ function conseguirToken() {
 
     // Decodificar la respuesta JSON
     $data = json_decode($response, true);
+    // Retornar el token obtenido o un mensaje de error
+    if (isset($data['access_token'])) {
+        if (!empty($result)) {
+            $stmt = $db->prepare("UPDATE token_twitch SET token = :token, expiracion = :expiracion");
+        } else {
+            $stmt = $db->prepare("INSERT INTO token_twitch (token, expiracion) VALUES (:token, :expiracion)");
+        }
+        $stmt->bindValue(':token', $data['access_token'], PDO::PARAM_STR);
+        $stmt->bindValue(':expiracion', date("Y-m-d H:i:s", strtotime("+60 days")), PDO::PARAM_STR);
+        $stmt->execute();
+
+        return $data['access_token'];
+    } else {
+        return "Error al obtener el token: " . $response;
+    }
 }
