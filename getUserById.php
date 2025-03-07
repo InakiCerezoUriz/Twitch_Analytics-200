@@ -17,7 +17,6 @@ function getUserById($id): void
         return;
     }
 
-    // Comprobar si el usuario a consultar esta en la base de datos o no
     $db  = conectarBBDD();
     $sql = $db->prepare('SELECT * FROM users WHERE id = :id');
     $sql->bindParam(':id', $id, PDO::PARAM_STR);
@@ -34,19 +33,7 @@ function getUserById($id): void
         'Content-Type: application/json',
         ];
 
-        $ch = curl_init($api_url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-        if ($_SERVER['SERVER_NAME'] == 'localhost') {
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-        }
-
-        $response = curl_exec($ch);
-        $res      = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-        curl_close($ch);
+        [$res, $response] = iniciarCurl($api_url, $headers);
 
         header('Content-Type: application/json');
         $data = json_decode($response, true);
