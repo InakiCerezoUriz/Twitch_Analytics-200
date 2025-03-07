@@ -7,10 +7,10 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
-      - name: Descargar Codigo
+      - name: Descargar Código
         uses: actions/checkout@v2
 
       - name: Instalar PHP
@@ -19,26 +19,13 @@ jobs:
           php-version: '8.3'
 
       - name: Instalar Composer
-        run: composer install
-
-      - name: Obtener archivos modificados en el commit
-        id: changed-files
         run: |
-          git diff-tree --no-commit-id --name-only -r HEAD > modified_files.txt
-          cat modified_files.txt
+          composer install
 
-      - name: PHPCS
+      - name: Fetch the GIT diff
+        id: fetch-diff
         run: |
-          if [ -s modified_files.txt ]; then
-            vendor/bin/phpcs --standard=PSR12 $(cat modified_files.txt)
-          else
-            echo "No modified files to check."
-          fi
-
-      - name: PHPMD
-        run: |
-          if [ -s modified_files.txt ]; then
-            vendor/bin/phpmd $(cat modified_files.txt) xml phpmd-ruleset.xml
-          else
-            echo "No modified files to check."
-          fi
+          DIFF=$(git -c diff.mnemonicprefix=false -c diff.noprefix=false --no-pager diff -r -p -m -M --full-index --no-color --staged | cat)
+          export GRUMPHP_GIT_WORKING_DIR="$(git rev-parse --show-toplevel)"
+          (cd "./" && printf "%s\n" "${DIFF}" | exec vendor/bin/grumphp.bat git:pre-commit '--skip-success-output')
+        shell: bash
