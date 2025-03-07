@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
       - name: Descargar Código
@@ -20,17 +20,11 @@ jobs:
 
       - name: Instalar Composer
         run: |
-          composer install --no-progress --no-suggest
+          composer install
 
       - name: Fetch the GIT diff
         id: fetch-diff
         run: |
-          echo "DIFF<<EOF" >> $GITHUB_ENV
-          git diff --staged >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-          echo "GRUMPHP_GIT_WORKING_DIR=$(git rev-parse --show-toplevel)" >> $GITHUB_ENV
-
-      - name: Run GrumPhp
-        run: |
-          chmod +x vendor/bin/grumphp # Asegurar permisos de ejecución
-          vendor/bin/grumphp git:pre-commit --skip-success-output
+          DIFF=$(git -c diff.mnemonicprefix=false -c diff.noprefix=false --no-pager diff -r -p -m -M --full-index --no-color --staged | cat)
+          export GRUMPHP_GIT_WORKING_DIR="$(git rev-parse --show-toplevel)"
+          (cd "./" && printf "%s\n" "${DIFF}" | exec vendor/bin/grumphp.bat git:pre-commit '--skip-success-output')
