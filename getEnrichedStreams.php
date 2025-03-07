@@ -4,9 +4,9 @@ function getEnrichedStreams($limit)
 {
     require_once './funcionesAuxiliares/conseguirToken.php';
     require_once './funcionesAuxiliares/comprobarExpiracion.php';
+    require_once './funcionesAuxiliares/iniciarCurl.php';
 
     comprobarAuthorization();
-
     $authHeader = $_SERVER['HTTP_AUTHORIZATION'];
     $token      = str_replace('Bearer ', '', $authHeader);
 

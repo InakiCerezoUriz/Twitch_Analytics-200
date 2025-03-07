@@ -5,6 +5,7 @@ function getUserById($id): void
     require_once './funcionesAuxiliares/conseguirToken.php';
     require_once './funcionesAuxiliares/comprobarExpiracion.php';
     require_once './funcionesAuxiliares/comprobarAuthorization.php';
+    require_once './funcionesAuxiliares/iniciarCurl.php';
 
     comprobarAuthorization();
 

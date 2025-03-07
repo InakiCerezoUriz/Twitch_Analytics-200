@@ -1,10 +1,10 @@
 <?php
 
-include_once 'funcionesAuxiliares/conectarBBDD.php';
-require_once './funcionesAuxiliares/conseguirToken.php';
-require_once './funcionesAuxiliares/comprobarExpiracion.php';
-
 function getTopOfTops($since) {
+    include_once 'funcionesAuxiliares/conectarBBDD.php';
+    require_once './funcionesAuxiliares/conseguirToken.php';
+    require_once './funcionesAuxiliares/comprobarExpiracion.php';
+    require_once './funcionesAuxiliares/iniciarCurl.php';
 
   if (!isset($_SERVER['HTTP_AUTHORIZATION'])) {
     header("HTTP/1.1 400 Bad Request");
@@ -36,21 +36,10 @@ function getTopOfTops($since) {
   }
 
   $api_url = 'https://api.twitch.tv/helix/games/top?first=3';
-  $ch = curl_init($api_url);
-  curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+  [$res, $response] = iniciarCurl($api_url, $headers);
 
-  if ($_SERVER['SERVER_NAME'] == 'localhost') {
-      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-      curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-  }
-  
-  $response = curl_exec($ch);
-  $res = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-  curl_close($ch);
-  
-  switch ($res){
+    switch ($res){
     case 200:
       header("HTTP/1.1 200 Ok");
       header('Content-Type: application/json');
