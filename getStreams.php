@@ -17,6 +17,7 @@ function getStreams()
         return;
     }
 
+
     $token = conseguirToken();
 
     $headers = [
