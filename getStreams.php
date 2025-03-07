@@ -4,6 +4,7 @@ function getStreams()
 {
     require_once './funcionesAuxiliares/conseguirToken.php';
     require_once './funcionesAuxiliares/comprobarExpiracion.php';
+    require_once './funcionesAuxiliares/iniciarCurl.php';
 
     comprobarAuthorization();
 
@@ -25,19 +26,7 @@ function getStreams()
     ];
 
     $api_url = 'https://api.twitch.tv/helix/streams';
-    $ch = curl_init($api_url);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-    if ($_SERVER['SERVER_NAME'] == 'localhost') {
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-    }
-
-    $response = curl_exec($ch);
-    $res = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-    curl_close($ch);
+    [$res, $response] = iniciarCurl($api_url, $headers);
     header('Content-Type: application/json; Charset: UTF-8');
 
     switch ($res) {
