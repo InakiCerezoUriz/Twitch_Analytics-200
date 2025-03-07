@@ -8,8 +8,8 @@ function getStreams()
 
     comprobarAuthorization();
 
-    $authHeader = $_SERVER['HTTP_AUTHORIZATION'];
-    $token = str_replace('Bearer ', '', $authHeader);
+    $auth_header = $_SERVER['HTTP_AUTHORIZATION'];
+    $token = str_replace('Bearer ', '', $auth_header);
 
     if (!comprobarExpiracion($token)) {
         header("HTTP/1.1 401 Unauthorized");
