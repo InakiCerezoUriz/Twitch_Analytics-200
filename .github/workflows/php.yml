@@ -21,6 +21,9 @@ jobs:
       - name: Instalar Composer
         run: |
           composer install
+      
+      - name: Add changes to git
+        run: git add .
 
       - name: Fetch the GIT diff
         id: fetch-diff
