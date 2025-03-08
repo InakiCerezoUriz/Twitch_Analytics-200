@@ -32,11 +32,13 @@ jobs:
           $modifiedFiles = git diff --name-only origin/main...HEAD
           Write-Output "Archivos modificados en la PR:"
           Write-Output $modifiedFiles
-          echo "::set-output name=modified_files::$modifiedFiles"
+          echo "MODIFIED_FILES=$modifiedFiles" >> $env:GITHUB_ENV
     
       - name: Ejecutar GrumPHP con archivos modificados
         shell: pwsh
         run: |
+          $workingDir = git rev-parse --show-toplevel
+          echo "GRUMPHP_GIT_WORKING_DIR=$workingDir" >> $env:GITHUB_ENV
           $modifiedFiles = "${{ steps.get_modified_files.outputs.modified_files }}"
           (cd $workingDir && echo $DIFF | vendor/bin/grumphp.bat git:pre-commit --skip-success-output --files $modifiedFiles)
           
