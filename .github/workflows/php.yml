@@ -26,15 +26,15 @@ jobs:
         id: get_modified_files
         run: |
           git fetch origin main
-          MODIFIED_FILES=$(git diff --name-only origin/main...HEAD)
+          $modifiedFiles = git diff --name-only origin/main...HEAD
           
-          echo "Archivos modificados en la PR:"
-          echo "$MODIFIED_FILES"
+          Write-Output "Archivos modificados en la PR:"
+          Write-Output $modifiedFiles
           
-          echo "::set-output name=modified_files::$MODIFIED_FILES"
+          echo "::set-output name=modified_files::$modifiedFiles"
       
       - name: Add changes to git
         run: |
-          MODIFIED_FILES="${{ steps.get_modified_files.outputs.modified_files }}"
-          vendor/bin/grumphp.bat run --no-interaction --files "$MODIFIED_FILES"
+          $modifiedFiles="${{ steps.get_modified_files.outputs.modified_files }}"
+          vendor/bin/grumphp.bat run --no-interaction --files "$$modifiedFiles"
           
