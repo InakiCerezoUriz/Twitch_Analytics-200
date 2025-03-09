@@ -39,6 +39,5 @@ jobs:
         run: |
           $workingDir = git rev-parse --show-toplevel
           echo "GRUMPHP_GIT_WORKING_DIR=$workingDir" >> $env:GITHUB_ENV
-          $modifiedFiles = "${{ steps.get_modified_files.outputs.modified_files }}"
-          (cd $workingDir && echo $DIFF | vendor/bin/grumphp.bat git:pre-commit --skip-success-output --file $modifiedFiles)
-          
+          $DIFF = git -c diff.mnemonicprefix=false -c diff.noprefix=false --no-pager diff -r -p -m -M --full-index --no-color --staged | Out-String
+          (cd $workingDir && echo $DIFF | vendor/bin/grumphp.bat git:pre-commit --skip-success-output)          
