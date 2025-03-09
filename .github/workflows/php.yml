@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Descargar Código
@@ -26,18 +26,17 @@ jobs:
 
       - name: Obtener los archivos modificados en la PR
         id: get_modified_files
-        shell: pwsh
         run: |
           git fetch origin main
           $modifiedFiles = git diff --name-only origin/main...HEAD
-          Write-Output "Archivos modificados en la PR:"
-          Write-Output $modifiedFiles
+          echo  "Archivos modificados en la PR:"
+          echo  $modifiedFiles
           echo "MODIFIED_FILES=$modifiedFiles" >> $env:GITHUB_ENV
     
       - name: Ejecutar GrumPHP con archivos modificados
-        shell: pwsh
         run: |
           $workingDir = git rev-parse --show-toplevel
           echo "GRUMPHP_GIT_WORKING_DIR=$workingDir" >> $env:GITHUB_ENV
-          $DIFF = git -c diff.mnemonicprefix=false -c diff.noprefix=false --no-pager diff -r -p -m -M --full-index --no-color --staged | Out-String
-          (cd $workingDir && echo $DIFF | vendor/bin/grumphp.bat git:pre-commit --skip-success-output)          
+          
+          DIFF=$(git -c diff.mnemonicprefix=false -c diff.noprefix=false --no-pager diff -r -p -m -M --full-index --no-color --staged)
+          echo "$DIFF" | vendor/bin/grumphp git:pre-commit --skip-success-output
