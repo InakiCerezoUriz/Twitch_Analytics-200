@@ -29,14 +29,14 @@ jobs:
         run: |
           git fetch origin main
           modifiedFiles=$(git diff --name-only origin/main...HEAD)
-          echo  "Archivos modificados en la PR:"
-          echo  $modifiedFiles
-          echo "MODIFIED_FILES=$modifiedFiles" >> $env:GITHUB_ENV
+          echo "Archivos modificados en la PR:"
+          echo "$modifiedFiles"
+          echo "MODIFIED_FILES=$modifiedFiles" >> $GITHUB_ENV
     
       - name: Ejecutar GrumPHP con archivos modificados
         run: |
           workingDir=$(git rev-parse --show-toplevel)
-          echo "GRUMPHP_GIT_WORKING_DIR=$workingDir" >> $env:GITHUB_ENV
+          echo "GRUMPHP_GIT_WORKING_DIR=$workingDir" >> $GITHUB_ENV
           
           DIFF=$(git -c diff.mnemonicprefix=false -c diff.noprefix=false --no-pager diff -r -p -m -M --full-index --no-color --staged)
-          echo "$DIFF" | vendor/bin/grumphp git:pre-commit --skip-success-output
+          echo "$DIFF" | vendor/bin/grumphp git:pre-commit --skip-success-output --no-interaction
