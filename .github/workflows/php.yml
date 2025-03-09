@@ -35,7 +35,7 @@ jobs:
     
       - name: Ejecutar GrumPHP con archivos modificados
         run: |
-          $workingDir = git rev-parse --show-toplevel
+          workingDir=$(git rev-parse --show-toplevel)
           echo "GRUMPHP_GIT_WORKING_DIR=$workingDir" >> $env:GITHUB_ENV
           
           DIFF=$(git -c diff.mnemonicprefix=false -c diff.noprefix=false --no-pager diff -r -p -m -M --full-index --no-color --staged)
