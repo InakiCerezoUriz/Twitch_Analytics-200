@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build:
+  environment:
     runs-on: ubuntu-latest
 
     steps:
@@ -32,7 +32,6 @@ jobs:
           echo "Archivos modificados en la PR:"
           echo "$modifiedFiles"
           
-          # Limpiar y formatear los archivos modificados para GitHub Actions
           modifiedFilesFormatted=$(echo "$modifiedFiles" | tr '\n' ',' | sed 's/,$//')
           echo "MODIFIED_FILES=$modifiedFilesFormatted" >> $GITHUB_ENV
     
@@ -42,4 +41,4 @@ jobs:
           echo "GRUMPHP_GIT_WORKING_DIR=$workingDir" >> $GITHUB_ENV
           
           DIFF=$(git -c diff.mnemonicprefix=false -c diff.noprefix=false --no-pager diff -r -p -m -M --full-index --no-color --staged)
-          echo "$DIFF" | vendor/bin/grumphp git:pre-commit --skip-success-output
+          echo "$DIFF" | php ./vendor/bin/grumphp run -c grumphp.yml  --skip-success-output
