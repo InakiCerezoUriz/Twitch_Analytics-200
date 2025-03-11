@@ -25,20 +25,4 @@ jobs:
           composer install
 
       - name: Obtener los archivos modificados en la PR
-        id: get_modified_files
-        run: |
-          git fetch origin main
-          modifiedFiles=$(git diff --name-only origin/main...HEAD)
-          echo "Archivos modificados en la PR:"
-          echo "$modifiedFiles"
-          
-          modifiedFilesFormatted=$(echo "$modifiedFiles" | tr '\n' ',' | sed 's/,$//')
-          echo "MODIFIED_FILES=$modifiedFilesFormatted" >> $GITHUB_ENV
-    
-      - name: Ejecutar GrumPHP con archivos modificados
-        run: |
-          workingDir=$(git rev-parse --show-toplevel)
-          echo "GRUMPHP_GIT_WORKING_DIR=$workingDir" >> $GITHUB_ENV
-          
-          DIFF=$(git -c diff.mnemonicprefix=false -c diff.noprefix=false --no-pager diff -r -p -m -M --full-index --no-color --staged)
-          echo "$DIFF" | php ./vendor/bin/grumphp run -c grumphp.yml  --skip-success-output
+        run: git diff origin/$GITHUB_BASE_REF --name-only --diff-filter=ACMR | php ./vendor/bin/grumphp run -c grumphp.yml
