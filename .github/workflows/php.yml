@@ -6,9 +6,8 @@ on:
       - main
 
 jobs:
-  environment:
+  Create_environment:
     runs-on: ubuntu-latest
-
     steps:
       - name: Descargar Código
         uses: actions/checkout@v2
@@ -24,5 +23,9 @@ jobs:
         run: |
           composer install
 
+  Lintens:
+    needs: Create_environment
+    runs-on: ubuntu-latest
+    steps:
       - name: Obtener los archivos modificados en la PR
         run: git diff origin/$GITHUB_BASE_REF --name-only --diff-filter=ACMR | php ./vendor/bin/grumphp run -c grumphp.yml
