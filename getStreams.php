@@ -9,11 +9,11 @@ function getStreams()
     comprobarAuthorization();
 
     $authHeader = $_SERVER['HTTP_AUTHORIZATION'];
-    $token = str_replace('Bearer ', '', $authHeader);
+    $token      = str_replace('Bearer ', '', $authHeader);
 
     if (!comprobarExpiracion($token)) {
-        header("HTTP/1.1 401 Unauthorized");
-        echo json_encode(['error' => "Unauthorized. Token is invalid or has expired."], JSON_PRETTY_PRINT);
+        header('HTTP/1.1 401 Unauthorized');
+        echo json_encode(['error' => 'Unauthorized. Token is invalid or has expired.'], JSON_PRETTY_PRINT);
         return;
     }
 
@@ -25,33 +25,33 @@ function getStreams()
     'Content-Type: application/json',
     ];
 
-    $api_url = 'https://api.twitch.tv/helix/streams';
+    $api_url          = 'https://api.twitch.tv/helix/streams';
     [$res, $response] = iniciarCurl($api_url, $headers);
     header('Content-Type: application/json; Charset: UTF-8');
 
     switch ($res) {
         case 200:
-            header("HTTP/1.1 200 Ok");
-            $data = json_decode($response, true);
+            header('HTTP/1.1 200 Ok');
+            $data  = json_decode($response, true);
             $lista = [];
             for ($i = 0; $i < count($data['data']); $i++) {
-                $title = $data['data'][$i]['title'];
+                $title     = $data['data'][$i]['title'];
                 $user_name = $data['data'][$i]['user_name'];
                 $lista[$i] = [
-                'title' => $title,
-                'user_name' => $user_name
+                'title'     => $title,
+                'user_name' => $user_name,
                 ];
             }
             $lista = json_encode($lista, JSON_PRETTY_PRINT);
             print($lista);
             break;
         case 401:
-            header("HTTP/1.1 401 Unauthorized");
-            echo json_encode(['error' => "Unauthorized. Twitch access token is invalid or has expired."], JSON_PRETTY_PRINT);
+            header('HTTP/1.1 401 Unauthorized');
+            echo json_encode(['error' => 'Unauthorized. Twitch access token is invalid or has expired.'], JSON_PRETTY_PRINT);
             break;
         case 500:
-            header("HTTP/1.1 500 Internal Server Error");
-            echo json_encode(['error' => "Internal Server error."], JSON_PRETTY_PRINT);
+            header('HTTP/1.1 500 Internal Server Error');
+            echo json_encode(['error' => 'Internal Server error.'], JSON_PRETTY_PRINT);
             break;
     }
 }

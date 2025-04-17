@@ -1,13 +1,14 @@
 <?php
 
 use PDO;
+use PDOException;
 
 function conectarBBDD(): ?PDO
 {
-    $host = 'cah8ha8ra8h8i7.cluster-czz5s0kz4scl.eu-west-1.rds.amazonaws.com';
-    $port = '5432';
-    $dbname = 'dd2e5fnppcb8fb';
-    $user = 'u1d480il6e6sme';
+    $host     = 'cah8ha8ra8h8i7.cluster-czz5s0kz4scl.eu-west-1.rds.amazonaws.com';
+    $port     = '5432';
+    $dbname   = 'dd2e5fnppcb8fb';
+    $user     = 'u1d480il6e6sme';
     $password = 'p3a5c8480a4dc4d7fa9d971c5e08dd22dbc6c21b20726f09b863b4879a9309eae';
 
     $dsn = "pgsql:host=$host;port=$port;dbname=$dbname";
@@ -22,7 +23,7 @@ function conectarBBDD(): ?PDO
         return $pdo;
     } catch (PDOException $e) {
         // Error de conexión
-        echo "Connection failed: " . $e->getMessage();
+        echo 'Connection failed: ' . $e->getMessage();
         return null;
     }
 }
