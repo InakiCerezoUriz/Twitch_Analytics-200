@@ -32,6 +32,7 @@ function getStreams(): void
 
     list($res, $response) = manejarSSLVerifyer($api_url, $headers);
 
+
     header('Content-Type: application/json; Charset: UTF-8');
 
     switch ($res) {
