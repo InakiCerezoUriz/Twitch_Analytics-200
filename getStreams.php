@@ -1,19 +1,22 @@
 <?php
 
-function getStreams()
+function getStreams(): void
 {
     require_once './funcionesAuxiliares/conseguirToken.php';
     require_once './funcionesAuxiliares/comprobarExpiracion.php';
-    require_once './funcionesAuxiliares/iniciarCurl.php';
 
-    comprobarAuthorization();
+    if (!isset($_SERVER['HTTP_AUTHORIZATION'])) {
+        header('HTTP/1.1 400 Bad Request');
+        echo json_encode(['error' => 'Authorization header is missing.'], JSON_PRETTY_PRINT);
+        exit();
+    }
 
     $authHeader = $_SERVER['HTTP_AUTHORIZATION'];
     $token      = str_replace('Bearer ', '', $authHeader);
 
     if (!comprobarExpiracion($token)) {
         header('HTTP/1.1 401 Unauthorized');
-        echo json_encode(['error' => 'Unauthorized. Token is invalid or has expired.'], JSON_PRETTY_PRINT);
+        echo json_encode(['error' => 'Unauthorized. Token is invalid or expired.'], JSON_PRETTY_PRINT);
         return;
     }
 
@@ -25,8 +28,11 @@ function getStreams()
     'Content-Type: application/json',
     ];
 
-    $api_url          = 'https://api.twitch.tv/helix/streams';
-    [$res, $response] = iniciarCurl($api_url, $headers);
+    $api_url = 'https://api.twitch.tv/helix/streams';
+
+    list($res, $response) = manejarSSLVerifyer($api_url, $headers);
+
+
     header('Content-Type: application/json; Charset: UTF-8');
 
     switch ($res) {

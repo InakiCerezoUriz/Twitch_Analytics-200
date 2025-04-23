@@ -1,175 +1,192 @@
 <?php
 
-include_once 'funcionesAuxiliares/conectarBBDD.php';
-require_once './funcionesAuxiliares/conseguirToken.php';
-require_once './funcionesAuxiliares/comprobarExpiracion.php';
+function getTopOfTops($since): void
+{
+    require_once 'funcionesAuxiliares/conectarBBDD.php';
+    require_once './funcionesAuxiliares/conseguirToken.php';
+    require_once './funcionesAuxiliares/comprobarExpiracion.php';
 
-function getTopOfTops($since) {
+    if (!validarPeticion($since)) {
+        return;
+    }
 
-  if (!isset($_SERVER['HTTP_AUTHORIZATION'])) {
-    header("HTTP/1.1 400 Bad Request");
-    echo json_encode(['error' => "Authorization header is missing."], JSON_PRETTY_PRINT);
-    exit();
-  }
+    $token   = conseguirToken();
+    $headers = getHeaders($token);
 
-  $authHeader = $_SERVER['HTTP_AUTHORIZATION'];
-  $token = str_replace('Bearer ', '', $authHeader);
-  
-  if(!comprobarExpiracion($token)) {
-    header("HTTP/1.1 401 Unauthorized");
-    echo json_encode(['error' => "Unauthorized. Token is invalid or has expired."], JSON_PRETTY_PRINT);
-    return;
-  }
+    list($res, $response) = manejarSSLVerifyer('https://api.twitch.tv/helix/games/top?first=3', $headers);
 
-  $token = conseguirToken();
+    match ($res) {
+        200     => manejarExito($response, $since, $headers),
+        401     => responderError(401, 'Unauthorized. Twitch access token is invalid or has expired.'),
+        404     => responderError(404, 'Not Found. No data available.'),
+        500     => responderError(500, 'Internal Server error.'),
+        default => responderError(500, 'Unexpected error.'),
+    };
+}
 
-  $headers = [
-  "Authorization: Bearer $token",
-  'Client-Id: pdp08hcdlqz3u2l18wz5eeu6kyll93',
-  'Content-Type: application/json',
-  ];
-  
-  if(filter_var($since, FILTER_VALIDATE_INT) == false){
-    header("HTTP/1.1 400 Bad Request");
-    echo json_encode(['error' => "Bad Request. Invalid or missing parameters."], JSON_PRETTY_PRINT);
-    return;
-  }
+function validarPeticion($since): bool
+{
+    comprobarAuthorization();
 
-  $api_url = 'https://api.twitch.tv/helix/games/top?first=3';
-  $ch = curl_init($api_url);
-  curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+    $token      = str_replace('Bearer ', '', $authHeader);
 
-  if ($_SERVER['SERVER_NAME'] == 'localhost') {
-      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-      curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-  }
-  
-  $response = curl_exec($ch);
-  $res = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    if (!comprobarExpiracion($token)) {
+        responderError(401, 'Unauthorized. Token is invalid or expired.');
+        return false;
+    }
 
-  curl_close($ch);
-  
-  switch ($res){
-    case 200:
-      header("HTTP/1.1 200 Ok");
-      header('Content-Type: application/json');
-      $data = json_decode($response, true);
-      // Introducir datos en BBDD
-      $db = conectarBBDD();
-        
-      // Comprobar la ultima actualizacion de la base de datos
-      $stmt = $db->prepare('SELECT ultima_solicitud FROM cache ORDER BY ultima_solicitud DESC LIMIT 1');
-      $stmt->execute();
-      $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-      $ultima_solicitud = strtotime($result[0]['ultima_solicitud']);
-      $current_time = time();
-      if (($current_time - $ultima_solicitud) > $since) {
-        $db->exec("DELETE FROM cache"); // Limpiar la tabla
-        for($i = 0; $i < 3; $i++) {
-          $game_id = $data['data'][$i]['id'];
-          $game_name = $data['data'][$i]['name'];
-          // llamada a la segunda API 
-          $api_url = "https://api.twitch.tv/helix/videos?game_id=$game_id&first=40&sort=views";
-          $ch = curl_init($api_url);
-          curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-          curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    if (!filter_var($since, FILTER_VALIDATE_INT)) {
+        responderError(400, 'Bad Request. Invalid or missing parameters.');
+        return false;
+    }
 
-          if ($_SERVER['SERVER_NAME'] == 'localhost') {
-              curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-              curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-          }
-          
-          $response = curl_exec($ch);
-          $res = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-          curl_close($ch);
+    return true;
+}
 
-          $game_data = json_decode($response, true);
-          for($j = 0;$j < 40; $j++){
-            $user_name = $game_data['data'][$j]['user_name'];
-            $title = $game_data['data'][$j]['title'];
-            $views = $game_data['data'][$j]['view_count'];
-            $duration = $game_data['data'][$j]['duration'];
-            $created_at = $game_data['data'][$j]['created_at'];
-            $ultima_solicitud = date('Y-m-d H:i:s');
-            $insertStmt = $db->prepare("INSERT INTO cache (game_id, game_name, ultima_solicitud, user_name, title, views, duration, created_at) VALUES (:game_id, :game_name, :ultima_solicitud, :user_name, :title, :views, :duration, :created_at)");
-            $insertStmt->bindValue(':game_id', $game_id, PDO::PARAM_STR);
-            $insertStmt->bindValue(':game_name', $game_name, PDO::PARAM_STR);
-            $insertStmt->bindValue(':ultima_solicitud', $ultima_solicitud, PDO::PARAM_STR);
-            $insertStmt->bindValue(':user_name', $user_name, PDO::PARAM_STR);
-            $insertStmt->bindValue(':title', $title, PDO::PARAM_STR);
-            $insertStmt->bindValue(':views', $views, PDO::PARAM_STR);
-            $insertStmt->bindValue(':duration', $duration, PDO::PARAM_STR);
-            $insertStmt->bindValue(':created_at', $created_at, PDO::PARAM_STR);
-            $insertStmt->execute();
-          }
+function getHeaders(string $token): array
+{
+    return [
+        "Authorization: Bearer $token",
+        'Client-Id: pdp08hcdlqz3u2l18wz5eeu6kyll93',
+        'Content-Type: application/json',
+    ];
+}
+
+function manejarExito(string $response, int $since, array $headers): void
+{
+    $data = json_decode($response, true);
+    $db   = conectarBBDD();
+
+    if (deberActualizarCache($db, $since)) {
+        actualizarCache($db, $data, $headers);
+    }
+
+    $final = compilarEstadisticas($db);
+    responderJson(200, $final);
+}
+
+function deberActualizarCache(PDO $db, int $since): bool
+{
+    $stmt = $db->prepare('SELECT ultima_solicitud FROM cache ORDER BY ultima_solicitud DESC LIMIT 1');
+    $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    $ultima_solicitud = strtotime($result['ultima_solicitud'] ?? '0');
+    return (time() - $ultima_solicitud) > $since;
+}
+
+function actualizarCache(PDO $db, array $data, array $headers): void
+{
+    $db->exec('DELETE FROM cache');
+
+    foreach ($data['data'] as $game) {
+        $game_id   = $game['id'];
+        $game_name = $game['name'];
+
+        $videos = obtenerVideosJuego($game_id, $headers);
+        insertarVideosEnCache($db, $videos, $game_id, $game_name);
+    }
+}
+
+function obtenerVideosJuego(string $game_id, array $headers): array
+{
+    $api_url = "https://api.twitch.tv/helix/videos?game_id=$game_id&first=40&sort=views";
+
+    $ch = curl_init($api_url);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+    if ($_SERVER['SERVER_NAME'] == 'localhost') {
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    }
+
+    $response = curl_exec($ch);
+    curl_close($ch);
+
+    return json_decode($response, true)['data'] ?? [];
+}
+
+function insertarVideosEnCache(PDO $db, array $videos, string $game_id, string $game_name): void
+{
+    $stmt = $db->prepare(
+        'INSERT INTO cache (
+        game_id,
+        game_name,
+        ultima_solicitud,
+        user_name,
+        title,
+        views,
+        duration,
+        created_at
+    ) VALUES (
+        :game_id,
+        :game_name,
+        :ultima_solicitud,
+        :user_name,
+        :title,
+        :views,
+        :duration,
+        :created_at
+    )'
+    );
+
+    foreach ($videos as $video) {
+        $stmt->execute([
+            ':game_id'          => $game_id,
+            ':game_name'        => $game_name,
+            ':ultima_solicitud' => date('Y-m-d H:i:s'),
+            ':user_name'        => $video['user_name'],
+            ':title'            => $video['title'],
+            ':views'            => $video['view_count'],
+            ':duration'         => $video['duration'],
+            ':created_at'       => $video['created_at'],
+        ]);
+    }
+}
+
+function compilarEstadisticas(PDO $db): array
+{
+    $final   = [];
+    $nombres = $db->query('SELECT GAME_NAME, USER_NAME FROM CACHE GROUP BY GAME_NAME, USER_NAME')->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($nombres as $nombre) {
+        $stmt = $db->prepare('WITH MaxViews AS (
+                                    SELECT GAME_ID, GAME_NAME, USER_NAME, TITLE, VIEWS, DURATION, CREATED_AT,
+                                           ROW_NUMBER() OVER (PARTITION BY GAME_ID, USER_NAME ORDER BY VIEWS DESC) AS row_num
+                                    FROM CACHE)
+                                SELECT c.GAME_ID, c.GAME_NAME, c.USER_NAME, COUNT(*) AS TOTAL_VIDEOS, SUM(c.VIEWS) AS TOTAL_VIEWS,
+                                       mv.TITLE AS MOST_VIEWED_TITLE, mv.VIEWS AS MOST_VIEWED_VIEWS,
+                                       mv.DURATION AS MOST_VIEWED_DURATION, mv.CREATED_AT AS MOST_VIEWED_CREATED_AT
+                                FROM CACHE c
+                                JOIN MaxViews mv ON c.GAME_ID = mv.GAME_ID AND c.USER_NAME = mv.USER_NAME AND mv.row_num = 1
+                                WHERE c.GAME_NAME = :game_name AND c.USER_NAME = :user_name
+                                GROUP BY c.GAME_ID, c.GAME_NAME, c.USER_NAME, mv.TITLE, mv.VIEWS, mv.DURATION, mv.CREATED_AT
+                                ORDER BY TOTAL_VIEWS DESC');
+
+        $stmt->execute([
+            ':game_name' => $nombre['game_name'],
+            ':user_name' => $nombre['user_name'],
+        ]);
+
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $final[] = array_map('strval', $row);
         }
-      }
+    }
 
-      $selectStmt = $db->prepare("SELECT GAME_NAME, USER_NAME
-                                          FROM CACHE
-                                          GROUP BY GAME_NAME, USER_NAME
-                                          ORDER BY GAME_NAME, USER_NAME;");
-      $selectStmt->execute();
-      $nombres = $selectStmt->fetchAll(PDO::FETCH_ASSOC);
+    return $final;
+}
 
-      for($k = 0; $k < count($nombres); $k++){
-        $selectStmt = $db->prepare("WITH MaxViews AS (
-                                                              SELECT 
-                                                                  GAME_ID,
-                                                                  GAME_NAME,
-                                                                  USER_NAME,
-                                                                  TITLE,
-                                                                  VIEWS,
-                                                                  DURATION,
-                                                                  CREATED_AT,
-                                                                  ROW_NUMBER() OVER (PARTITION BY GAME_ID, USER_NAME ORDER BY VIEWS DESC) AS row_num
-                                                              FROM 
-                                                                  CACHE
-                                                          )
-                                                          SELECT 
-                                                              c.GAME_ID,
-                                                              c.GAME_NAME,
-                                                              c.USER_NAME,
-                                                              COUNT(*) AS TOTAL_VIDEOS,
-                                                              SUM(c.VIEWS) AS TOTAL_VIEWS,
-                                                              mv.TITLE AS MOST_VIEWED_TITLE,
-                                                              mv.VIEWS AS MOST_VIEWED_VIEWS,
-                                                              mv.DURATION AS MOST_VIEWED_DURATION,
-                                                              mv.CREATED_AT AS MOST_VIEWED_CREATED_AT
-                                                          FROM 
-                                                              CACHE c
-                                                          JOIN 
-                                                              MaxViews mv ON c.GAME_ID = mv.GAME_ID AND c.USER_NAME = mv.USER_NAME AND mv.row_num = 1
-                                                          WHERE 
-                                                              c.GAME_NAME = :game_name AND c.USER_NAME = :user_name
-                                                          GROUP BY 
-                                                              c.GAME_ID, c.GAME_NAME, c.USER_NAME, mv.TITLE, mv.VIEWS, mv.DURATION, mv.CREATED_AT
-                                                          ORDER BY 
-                                                              TOTAL_VIEWS DESC;");
-        $selectStmt->bindValue(":game_name", $nombres[$k]['game_name'], PDO::PARAM_STR);
-        $selectStmt->bindValue(":user_name", $nombres[$k]['user_name'], PDO::PARAM_STR);
-        $selectStmt->execute();
-        while ($tops = $selectStmt->fetch(PDO::FETCH_ASSOC)) {
-          foreach ($tops as $key => $value) {
-            $tops[$key] = (string)$value;
-          }
-          $final[] = $tops;
-        }
-      }
-      print(json_encode($final, JSON_PRETTY_PRINT));
+function responderJson(int $code, array $data): void
+{
+    http_response_code($code);
+    header('Content-Type: application/json');
+    echo json_encode($data, JSON_PRETTY_PRINT);
+}
 
-      break;
-    case 401:
-      header("HTTP/1.1 401 Unauthorized");
-      echo json_encode(['error' =>  "Unauthorized. Twitch access token is invalid or has expired."], JSON_PRETTY_PRINT);
-      break;
-    case 404:
-      header("HTTP/1.1 404 Not Found");
-      echo json_encode(['error' =>  "Not Found. No data available."], JSON_PRETTY_PRINT);
-    case 500:
-      header("HTTP/1.1 500 Internal Server Error");
-      echo json_encode(['error' =>  "Internal Server error."], JSON_PRETTY_PRINT);
-      break;
-  }
+function responderError(int $code, string $message): void
+{
+    http_response_code($code);
+    echo json_encode(['error' => $message], JSON_PRETTY_PRINT);
 }
