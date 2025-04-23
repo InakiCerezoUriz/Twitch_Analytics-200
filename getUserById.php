@@ -5,6 +5,7 @@ function getUserById($id): void
     require_once './funcionesAuxiliares/conseguirToken.php';
     require_once './funcionesAuxiliares/comprobarExpiracion.php';
     require_once './funcionesAuxiliares/comprobarAuthorization.php';
+    require_once './funcionesAuxiliares/iniciarCurl.php';
 
     comprobarAuthorization();
 
@@ -33,7 +34,7 @@ function getUserById($id): void
         'Content-Type: application/json',
         ];
 
-        [$res, $response] = iniciarCurl($api_url, $headers);
+        [$response, $res] = iniciarCurl($api_url, $headers);
 
         header('Content-Type: application/json');
         $data = json_decode($response, true);
