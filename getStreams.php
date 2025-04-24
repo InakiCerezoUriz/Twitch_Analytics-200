@@ -2,6 +2,7 @@
 
 function getStreams(): void
 {
+
     require_once './funcionesAuxiliares/conseguirToken.php';
     require_once './funcionesAuxiliares/comprobarExpiracion.php';
 
@@ -23,15 +24,25 @@ function getStreams(): void
     $token = conseguirToken();
 
     $headers = [
-    "Authorization: Bearer $token",  // Token
-    'Client-Id: pdp08hcdlqz3u2l18wz5eeu6kyll93',  // Client ID de la aplicación de twitch
-    'Content-Type: application/json',
+        "Authorization: Bearer $token",  // Token
+        'Client-Id: pdp08hcdlqz3u2l18wz5eeu6kyll93',  // Client ID de la aplicación de twitch
+        'Content-Type: application/json',
     ];
 
     $api_url = 'https://api.twitch.tv/helix/streams';
 
-    list($res, $response) = manejarSSLVerifyer($api_url, $headers);
+    $ch = curl_init($api_url);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
+    if ($_SERVER['SERVER_NAME'] == 'localhost') {
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    }
+
+    $response = curl_exec($ch);
+    $res      = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
 
     header('Content-Type: application/json; Charset: UTF-8');
 
@@ -44,8 +55,8 @@ function getStreams(): void
                 $title     = $data['data'][$i]['title'];
                 $user_name = $data['data'][$i]['user_name'];
                 $lista[$i] = [
-                'title'     => $title,
-                'user_name' => $user_name,
+                    'title'     => $title,
+                    'user_name' => $user_name,
                 ];
             }
             $lista = json_encode($lista, JSON_PRETTY_PRINT);
