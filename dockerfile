@@ -1,4 +1,4 @@
-FROM php:8.1-cli-bullseye
+FROM php:8.3-cli
 ENV COMPOSER_ALLOW_SUPERUSER=1
 WORKDIR /200/TwitchAnalytics
 RUN apt-get update && apt-get install -y unzip
