@@ -3,11 +3,12 @@
 function getStreams(): void
 {
 
-    require_once './funcionesAuxiliares/conseguirToken.php';
-    require_once './funcionesAuxiliares/comprobarExpiracion.php';
+    require_once __DIR__ . '/src/funcionesAuxiliares/conseguirToken.php';
+    require_once __DIR__ . '/src/funcionesAuxiliares/comprobarExpiracion.php';
 
     if (!isset($_SERVER['HTTP_AUTHORIZATION'])) {
-        header('HTTP/1.1 400 Bad Request');
+        http_response_code(400);
+        header('Content-Type: application/json');
         echo json_encode(['error' => 'Authorization header is missing.'], JSON_PRETTY_PRINT);
         exit();
     }
@@ -16,7 +17,8 @@ function getStreams(): void
     $token      = str_replace('Bearer ', '', $authHeader);
 
     if (!comprobarExpiracion($token)) {
-        header('HTTP/1.1 401 Unauthorized');
+        http_response_code(401);
+        header('Content-Type: application/json');
         echo json_encode(['error' => 'Unauthorized. Token is invalid or expired.'], JSON_PRETTY_PRINT);
         return;
     }
@@ -44,11 +46,11 @@ function getStreams(): void
     $res      = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
 
-    header('Content-Type: application/json; Charset: UTF-8');
+    header('Content-Type: application/json; charset=UTF-8');
 
     switch ($res) {
         case 200:
-            header('HTTP/1.1 200 Ok');
+            http_response_code(200);
             $data  = json_decode($response, true);
             $lista = [];
             for ($i = 0; $i < count($data['data']); $i++) {
@@ -63,11 +65,11 @@ function getStreams(): void
             print($lista);
             break;
         case 401:
-            header('HTTP/1.1 401 Unauthorized');
+            http_response_code(401);
             echo json_encode(['error' => 'Unauthorized. Twitch access token is invalid or has expired.'], JSON_PRETTY_PRINT);
             break;
         case 500:
-            header('HTTP/1.1 500 Internal Server Error');
+            http_response_code(500);
             echo json_encode(['error' => 'Internal Server error.'], JSON_PRETTY_PRINT);
             break;
     }

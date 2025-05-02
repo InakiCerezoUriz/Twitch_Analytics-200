@@ -63,3 +63,8 @@ $router->get('/analytics/user', function () {
 
     getUserById($_GET['id']);
 });
+
+$router->get('/analytics/streams', function () {
+    require_once __DIR__ . '/../getStreams.php';
+    getStreams();
+});
