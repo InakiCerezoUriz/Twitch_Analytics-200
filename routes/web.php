@@ -50,3 +50,16 @@ $router->post('/token', function () {
 
     token($data['email'], $data['api_key']);
 });
+
+$router->get('/analytics/user', function () {
+    require_once __DIR__ . '/../getUserById.php';
+
+    if (empty($_GET['id'])) {
+        http_response_code(400);
+        header('Content-Type: application/json');
+        echo json_encode(['error' => "Invalid or missing 'id' parameter."], JSON_PRETTY_PRINT);
+        return;
+    }
+
+    getUserById($_GET['id']);
+});

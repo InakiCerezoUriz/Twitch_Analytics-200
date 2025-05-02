@@ -1,7 +1,5 @@
 <?php
 
-namespace TwitchAnalytics\funcionesAuxiliares;
-
 function comprobarExpiracion($token): bool
 {
     include_once 'conectarBBDD.php';

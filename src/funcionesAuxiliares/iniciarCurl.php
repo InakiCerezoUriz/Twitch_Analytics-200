@@ -1,7 +1,5 @@
 <?php
 
-namespace TwitchAnalytics\funcionesAuxiliares;
-
 function iniciarCurl($api_url, $headers): array
 {
     $ch = curl_init($api_url);

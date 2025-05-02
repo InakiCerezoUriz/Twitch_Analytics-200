@@ -1,7 +1,5 @@
 <?php
 
-namespace TwitchAnalytics\funcionesAuxiliares;
-
 function conseguirToken()
 {
     $db   = conectarBBDD();

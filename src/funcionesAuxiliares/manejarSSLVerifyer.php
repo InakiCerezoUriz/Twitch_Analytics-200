@@ -1,7 +1,5 @@
 <?php
 
-namespace TwitchAnalytics\funcionesAuxiliares;
-
 function manejarSSLVerifyer($api_url, $headers): array
 {
     $ch = curl_init($api_url);
