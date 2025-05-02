@@ -1,7 +1,8 @@
 <?php
 
-use PDO;
-use PDOException;
+/**
+ * @SuppressWarnings(PHPMD.MissingImport)
+ */
 
 function conectarBBDD(): ?\PDO
 {
@@ -14,14 +15,14 @@ function conectarBBDD(): ?\PDO
     $dsn = "pgsql:host=$host;port=$port;dbname=$dbname";
 
     try {
-        $pdo = new PDO($dsn, $user, $password);
+        $pdo = new \PDO($dsn, $user, $password);
         // Set error mode to exception
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         // Conexión exitosa
         #echo "Connected to the database successfully!";
         return $pdo;
-    } catch (PDOException $e) {
+    } catch (\PDOException $e) {
         // Error de conexión
         error_log('Connection failed: ' . $e->getMessage());
         return null;

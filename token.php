@@ -2,8 +2,8 @@
 
 function token($email, $api_key)
 {
-    include_once 'funcionesAuxiliares/conectarBBDD.php';
-    include_once './funcionesAuxiliares/generarToken.php';
+    include_once __DIR__ . '/src/funcionesAuxiliares/conectarBBDD.php';
+    include_once __DIR__ . '/src/funcionesAuxiliares/generarToken.php';
 
     $db = conectarBBDD();
 
@@ -31,8 +31,14 @@ function token($email, $api_key)
 
     $usuario = obtenerUsuario($db, $email);
 
-    if (!$usuario || $usuario['api_key'] != $api_key || $usuario['email'] != $email) {
-        header('HTTP/1.1 401 Not Found');
+    if (!$usuario) {
+        http_response_code(401);
+        echo json_encode(['error' => 'Unauthorized. API access token is invalid.'], JSON_PRETTY_PRINT);
+        return;
+    }
+
+    if ($usuario['api_key'] !== $api_key || $usuario['email'] !== $email) {
+        http_response_code(401);
         echo json_encode(['error' => 'Unauthorized. API access token is invalid.'], JSON_PRETTY_PRINT);
         return;
     }
@@ -61,7 +67,7 @@ function validarApiKey(string $api_key): ?string
 
 function obtenerUsuario(PDO $db, string $email): ?array
 {
-    $stmt = $db->prepare('SELECT api_key, email, token, fechaExpiracion FROM usuario WHERE email = :email');
+    $stmt = $db->prepare('SELECT api_key, email, token, fechaexpiracion FROM usuario WHERE email = :email');
     $stmt->bindValue(':email', $email, PDO::PARAM_STR);
     $stmt->execute();
     return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
@@ -69,9 +75,11 @@ function obtenerUsuario(PDO $db, string $email): ?array
 
 function emitirToken(array $usuario, PDO $db): array
 {
-    if ($usuario['token'] === null || $usuario['fechaExpiracion'] < date('Y-m-d H:i:s')) {
+    if ($usuario['token'] === null || $usuario['fechaexpiracion'] < date('Y-m-d H:i:s')) {
         $nuevoToken = generarToken();
-        $stmt       = $db->prepare('UPDATE usuario SET token = :token, fechaExpiracion = :fechaExpiracion WHERE email = :email');
+        $stmt       = $db->prepare(
+            'UPDATE usuario SET token = :token, fechaexpiracion = :fechaExpiracion WHERE email = :email'
+        );
         $stmt->bindValue(':token', $nuevoToken['token'], PDO::PARAM_STR);
         $stmt->bindValue(':fechaExpiracion', $nuevoToken['expiracion'], PDO::PARAM_STR);
         $stmt->bindValue(':email', $usuario['email'], PDO::PARAM_STR);
