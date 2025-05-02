@@ -1,5 +1,7 @@
 <?php
 
+namespace TwitchAnalytics\funcionesAuxiliares;
+
 use Random\RandomException;
 
 /**

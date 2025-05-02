@@ -1,5 +1,7 @@
 <?php
 
+namespace TwitchAnalytics\funcionesAuxiliares;
+
 function comprobarAuthorization(): void
 {
     if (!isset($_SERVER['HTTP_AUTHORIZATION'])) {

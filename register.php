@@ -2,12 +2,12 @@
 
 function register()
 {
-    include_once './funcionesAuxiliares/conectarBBDD.php';
-    include_once './funcionesAuxiliares/generarApiKey.php';
+    include_once __DIR__ . '/src/funcionesAuxiliares/conectarBBDD.php';
+    include_once __DIR__ . '/src/funcionesAuxiliares/generarApiKey.php';
 
     $body  = file_get_contents('php://input');
     $data  = json_decode($body, true);
-    $email = $data['email'];
+    $email = $data['email'] ?? null;
     if (empty($email)) {
         header('HTTP/1.1 400 Bad Request');
         echo json_encode(['error' => 'The email is mandatory'], JSON_PRETTY_PRINT);

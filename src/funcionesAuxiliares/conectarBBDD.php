@@ -3,7 +3,7 @@
 use PDO;
 use PDOException;
 
-function conectarBBDD(): ?PDO
+function conectarBBDD(): ?\PDO
 {
     $host     = 'cah8ha8ra8h8i7.cluster-czz5s0kz4scl.eu-west-1.rds.amazonaws.com';
     $port     = '5432';
@@ -23,7 +23,7 @@ function conectarBBDD(): ?PDO
         return $pdo;
     } catch (PDOException $e) {
         // Error de conexión
-        echo 'Connection failed: ' . $e->getMessage();
+        error_log('Connection failed: ' . $e->getMessage());
         return null;
     }
 }

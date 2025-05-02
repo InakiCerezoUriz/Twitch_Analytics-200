@@ -13,6 +13,7 @@
 |
 */
 
-$router->post('/register', function () use ($router) {
+$router->post('/register', function () {
     require __DIR__ . '/../register.php';
+    register();
 });

@@ -1,6 +1,8 @@
 <?php
 
-function iniciarCurl($api_url, $headers): array
+namespace TwitchAnalytics\funcionesAuxiliares;
+
+function manejarSSLVerifyer($api_url, $headers): array
 {
     $ch = curl_init($api_url);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
@@ -14,5 +16,6 @@ function iniciarCurl($api_url, $headers): array
     $response = curl_exec($ch);
     $res      = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
-    return [$response, $res];
+
+    return ['response' => $response, 'res' => $res];
 }
