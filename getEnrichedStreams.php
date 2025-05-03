@@ -3,9 +3,9 @@
 function getEnrichedStreams(): void
 {
 
-    require_once './funcionesAuxiliares/conseguirToken.php';
-    require_once './funcionesAuxiliares/comprobarExpiracion.php';
-    require_once './funcionesAuxiliares/comprobarAuthorization.php';
+    require_once __DIR__ . '/src/funcionesAuxiliares/conseguirToken.php';
+    require_once __DIR__ . '/src/funcionesAuxiliares/comprobarExpiracion.php';
+    require_once __DIR__ . '/src/funcionesAuxiliares/comprobarAuthorization.php';
 
     comprobarAuthorization();
 
@@ -100,7 +100,7 @@ function getUserData(string $userId, array $headers): array
 
 function returnError(int $status, string $message): void
 {
-    header("HTTP/1.1 $status");
+    http_response_code($status);
     header('Content-Type: application/json');
     echo json_encode(['error' => $message], JSON_PRETTY_PRINT);
 }

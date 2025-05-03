@@ -68,3 +68,8 @@ $router->get('/analytics/streams', function () {
     require_once __DIR__ . '/../getStreams.php';
     getStreams();
 });
+
+$router->get('/analytics/streams/enriched', function () {
+    require_once __DIR__ . '/../getEnrichedStreams.php';
+    getEnrichedStreams();
+});
