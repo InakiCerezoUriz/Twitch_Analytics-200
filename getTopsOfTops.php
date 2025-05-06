@@ -2,9 +2,11 @@
 
 function getTopOfTops($since): void
 {
-    require_once 'funcionesAuxiliares/conectarBBDD.php';
-    require_once './funcionesAuxiliares/conseguirToken.php';
-    require_once './funcionesAuxiliares/comprobarExpiracion.php';
+    require_once __DIR__ . '/src/funcionesAuxiliares/conectarBBDD.php';
+    require_once __DIR__ . '/src/funcionesAuxiliares/conseguirToken.php';
+    require_once __DIR__ . '/src/funcionesAuxiliares/comprobarExpiracion.php';
+    require_once __DIR__ . '/src/funcionesAuxiliares/comprobarAuthorization.php';
+    require_once __DIR__ . '/src/funcionesAuxiliares/manejarSSLVerifyer.php';
 
     if (!validarPeticion($since)) {
         return;
@@ -56,7 +58,13 @@ function getHeaders(string $token): array
 function manejarExito(string $response, int $since, array $headers): void
 {
     $data = json_decode($response, true);
-    $db   = conectarBBDD();
+
+    if (!isset($data['data']) || !is_array($data['data']) || count($data['data']) === 0) {
+        responderError(404, 'No top games data available.');
+        return;
+    }
+
+    $db = conectarBBDD();
 
     if (deberActualizarCache($db, $since)) {
         actualizarCache($db, $data, $headers);
@@ -79,6 +87,11 @@ function deberActualizarCache(PDO $db, int $since): bool
 function actualizarCache(PDO $db, array $data, array $headers): void
 {
     $db->exec('DELETE FROM cache');
+
+    if (!isset($data['data']) || !is_array($data['data']) || count($data['data']) === 0) {
+        responderError(404, 'No top games data available.');
+        return;
+    }
 
     foreach ($data['data'] as $game) {
         $game_id   = $game['id'];
@@ -105,7 +118,13 @@ function obtenerVideosJuego(string $game_id, array $headers): array
     $response = curl_exec($ch);
     curl_close($ch);
 
-    return json_decode($response, true)['data'] ?? [];
+    $data = json_decode($response, true);
+
+    if (!isset($data['data']) || !is_array($data['data'])) {
+        return [];
+    }
+
+    return $data['data'];
 }
 
 function insertarVideosEnCache(PDO $db, array $videos, string $game_id, string $game_name): void
@@ -149,14 +168,25 @@ function insertarVideosEnCache(PDO $db, array $videos, string $game_id, string $
 function compilarEstadisticas(PDO $db): array
 {
     $final   = [];
-    $nombres = $db->query('SELECT GAME_NAME, USER_NAME FROM CACHE GROUP BY GAME_NAME, USER_NAME')->fetchAll(PDO::FETCH_ASSOC);
+    $nombres = $db->query(
+        'SELECT GAME_NAME, USER_NAME FROM CACHE GROUP BY GAME_NAME, USER_NAME'
+    )->fetchAll(PDO::FETCH_ASSOC);
+
+    if (empty($nombres)) {
+        responderJson(200, []);
+        return [];
+    }
 
     foreach ($nombres as $nombre) {
+        if (empty($nombre['game_name']) || empty($nombre['user_name'])) {
+            continue;
+        }
         $stmt = $db->prepare('WITH MaxViews AS (
                                     SELECT GAME_ID, GAME_NAME, USER_NAME, TITLE, VIEWS, DURATION, CREATED_AT,
                                            ROW_NUMBER() OVER (PARTITION BY GAME_ID, USER_NAME ORDER BY VIEWS DESC) AS row_num
                                     FROM CACHE)
-                                SELECT c.GAME_ID, c.GAME_NAME, c.USER_NAME, COUNT(*) AS TOTAL_VIDEOS, SUM(c.VIEWS) AS TOTAL_VIEWS,
+                                SELECT c.GAME_ID, c.GAME_NAME, c.USER_NAME, COUNT(*) AS TOTAL_VIDEOS, 
+                                       SUM(c.VIEWS) AS TOTAL_VIEWS,
                                        mv.TITLE AS MOST_VIEWED_TITLE, mv.VIEWS AS MOST_VIEWED_VIEWS,
                                        mv.DURATION AS MOST_VIEWED_DURATION, mv.CREATED_AT AS MOST_VIEWED_CREATED_AT
                                 FROM CACHE c

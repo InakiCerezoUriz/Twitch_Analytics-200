@@ -1,80 +1,90 @@
 <?php
 
-include_once 'funcionesAuxiliares/conectarBBDD.php';
-include_once './funcionesAuxiliares/generarToken.php';
+function token($email, $api_key)
+{
+    include_once __DIR__ . '/src/funcionesAuxiliares/conectarBBDD.php';
+    include_once __DIR__ . '/src/funcionesAuxiliares/generarToken.php';
 
-function token($email, $api_key) {
     $db = conectarBBDD();
 
-    if (empty($email)) {
-        header("HTTP/1.1 400 Bad Request");
-        echo json_encode(['error' => "The email is mandatory"], JSON_PRETTY_PRINT);
+    //Comprueba si el email existe y si es válido
+    $error = validarEmail($email);
+    if ($error !== null) {
+        header('HTTP/1.1 400 Bad Request');
+        echo json_encode(['error' => $error], JSON_PRETTY_PRINT);
         return;
     }
 
-    // comprobar si el email es válido
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        header("HTTP/1.1 400 Bad Request");
-        echo json_encode(['error' => "The email must be a valid email address"], JSON_PRETTY_PRINT);
-        return;
-    }
-
-    if (empty($api_key)) {
-        header("HTTP/1.1 400 Bad Request");
-        echo json_encode(['error' => "The api_key is mandatory"], JSON_PRETTY_PRINT);
+    $error = validarApiKey($api_key);
+    if ($error !== null) {
+        header('HTTP/1.1 400 Bad Request');
+        echo json_encode(['error' => $error], JSON_PRETTY_PRINT);
         return;
     }
 
 
     if (!$db) {
-        header("HTTP/1.1 500 Internal Server Error");
-        echo json_encode(['error' => "Internal Server error."], JSON_PRETTY_PRINT);
+        header('HTTP/1.1 500 Internal Server Error');
+        echo json_encode(['error' => 'Internal Server error.'], JSON_PRETTY_PRINT);
         return;
-    } else{
-
-        $stmt = $db->prepare("SELECT api_key, email FROM usuario WHERE email = :email");
-        $stmt->bindValue(':email', $email, PDO::PARAM_STR);
-        $stmt->execute();
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if (empty($result)) {
-            // El usuario no existe
-            header("HTTP/1.1 401 Not Found");
-            echo json_encode(["error"=> "Unauthorized. API access token is invalid."], JSON_PRETTY_PRINT);
-            return;
-        } else{
-            if($result['api_key'] != $api_key || $result['email'] != $email){
-                header("HTTP/1.1 401 Not Found");
-                echo json_encode(["error"=> "Unauthorized. API access token is invalid."], JSON_PRETTY_PRINT);
-                return;
-            } else{
-                // El usuario es de verdad - Se ha comprobado que el email y el api_key son correctos
-                // Comprobar si el usuario ya tiene token
-                $stmt = $db->prepare("SELECT token, fechaExpiracion FROM usuario WHERE email = :email");
-                $stmt->bindValue(':email', $email, PDO::PARAM_STR);
-                $stmt->execute();
-                $result = $stmt->fetch(PDO::FETCH_ASSOC);
-                if ($result['token'] == NULL || $result['fechaexpiracion'] < date("Y-m-d H:i:s")) {
-                    // El usuario no tiene token
-                    $resultado = generarToken();
-                    $stmt = $db->prepare("UPDATE usuario SET token = :token, fechaExpiracion = :fechaExpiracion WHERE email = :email");
-                    $stmt->bindValue(':email', $email, PDO::PARAM_STR);
-                    $stmt->bindValue(':token', $resultado['token'], PDO::PARAM_STR);
-                    $stmt->bindValue(':fechaExpiracion', $resultado['expiracion'], PDO::PARAM_STR);
-                    $stmt->execute();
-                    header("HTTP/1.1 200 Ok");
-                    echo json_encode(["token"=> $resultado["token"]], JSON_PRETTY_PRINT);
-                    return;
-                } else{
-                    // El token no ha expirado
-                    header("HTTP/1.1 200 Ok");
-                    echo json_encode(["token"=> $result["token"]], JSON_PRETTY_PRINT);
-                    return;
-                }
-
-            }
-        }
     }
-    
+
+    $usuario = obtenerUsuario($db, $email);
+
+    if (!$usuario) {
+        http_response_code(401);
+        echo json_encode(['error' => 'Unauthorized. API access token is invalid.'], JSON_PRETTY_PRINT);
+        return;
+    }
+
+    if ($usuario['api_key'] !== $api_key || $usuario['email'] !== $email) {
+        http_response_code(401);
+        echo json_encode(['error' => 'Unauthorized. API access token is invalid.'], JSON_PRETTY_PRINT);
+        return;
+    }
+    // El usuario es de verdad - Se ha comprobado que el email y el api_key son correctos
+    $resultado = emitirToken($usuario, $db);
+
+    http_response_code(200);
+    echo json_encode($resultado, JSON_PRETTY_PRINT);
 }
-?>
+
+function validarEmail(string $email): ?string
+{
+    if (empty($email)) {
+        return 'The email is mandatory';
+    }
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        return 'The email must be a valid email address';
+    }
+    return null;
+}
+
+function validarApiKey(string $api_key): ?string
+{
+    return empty($api_key) ? 'The api_key is mandatory' : null;
+}
+
+function obtenerUsuario(PDO $db, string $email): ?array
+{
+    $stmt = $db->prepare('SELECT api_key, email, token, fechaexpiracion FROM usuario WHERE email = :email');
+    $stmt->bindValue(':email', $email, PDO::PARAM_STR);
+    $stmt->execute();
+    return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+}
+
+function emitirToken(array $usuario, PDO $db): array
+{
+    if ($usuario['token'] === null || $usuario['fechaexpiracion'] < date('Y-m-d H:i:s')) {
+        $nuevoToken = generarToken();
+        $stmt       = $db->prepare(
+            'UPDATE usuario SET token = :token, fechaexpiracion = :fechaExpiracion WHERE email = :email'
+        );
+        $stmt->bindValue(':token', $nuevoToken['token'], PDO::PARAM_STR);
+        $stmt->bindValue(':fechaExpiracion', $nuevoToken['expiracion'], PDO::PARAM_STR);
+        $stmt->bindValue(':email', $usuario['email'], PDO::PARAM_STR);
+        $stmt->execute();
+        return ['token' => $nuevoToken['token']];
+    }
+    return ['token' => $usuario['token']];
+}

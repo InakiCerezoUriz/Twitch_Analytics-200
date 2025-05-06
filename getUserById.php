@@ -2,10 +2,10 @@
 
 function getUserById($id): void
 {
-    require_once './funcionesAuxiliares/conseguirToken.php';
-    require_once './funcionesAuxiliares/comprobarExpiracion.php';
-    require_once './funcionesAuxiliares/comprobarAuthorization.php';
-    require_once './funcionesAuxiliares/iniciarCurl.php';
+    require_once __DIR__ . '/src/funcionesAuxiliares/conseguirToken.php';
+    require_once __DIR__ . '/src/funcionesAuxiliares/comprobarExpiracion.php';
+    require_once __DIR__ . '/src/funcionesAuxiliares/comprobarAuthorization.php';
+    require_once __DIR__ . '/src/funcionesAuxiliares/iniciarCurl.php';
 
     comprobarAuthorization();
 
@@ -13,7 +13,8 @@ function getUserById($id): void
     $token      = str_replace('Bearer ', '', $authHeader);
 
     if (!comprobarExpiracion($token)) {
-        header('HTTP/1.1 401 Unauthorized');
+        http_response_code(401);
+        header('Content-Type: application/json');
         echo json_encode(['error' => 'Unauthorized. Token is invalid or has expired.'], JSON_PRETTY_PRINT);
         return;
     }
@@ -41,19 +42,21 @@ function getUserById($id): void
         switch ($res) {
             case 200:
                 if (empty($data['data'])) {
-                    header('HTTP/1.1 404 Not Found');
+                    http_response_code(404);
+                    header('Content-Type: application/json');
                     echo json_encode(['error' => 'User not found.'], JSON_PRETTY_PRINT);
                 } else {
-                    header('HTTP/1.1 200 Ok');
+                    http_response_code(200);
+                    header('Content-Type: application/json');
                     $user = json_encode($data['data'][0], JSON_PRETTY_PRINT);
                     $stmt = $db->prepare(
                         'INSERT INTO users (
-                                    id, login, display_name, type, broadcaster_type, description, 
-                                    profile_image_url, offline_image_url, view_count, created_at
-                                ) VALUES (
-                                    :id, :login, :display_name, :type, :broadcaster_type, :description, 
-                                    :profile_image_url, :offline_image_url, :view_count, :created_at
-                                )'
+                                        id, login, display_name, type, broadcaster_type, description, 
+                                        profile_image_url, offline_image_url, view_count, created_at
+                                    ) VALUES (
+                                        :id, :login, :display_name, :type, :broadcaster_type, :description, 
+                                        :profile_image_url, :offline_image_url, :view_count, :created_at
+                                    )'
                     );
                     $stmt->bindParam(':id', $data['data'][0]['id'], PDO::PARAM_STR);
                     $stmt->bindParam(':login', $data['data'][0]['login'], PDO::PARAM_STR);
@@ -71,15 +74,18 @@ function getUserById($id): void
                 }
                 break;
             case 400:
-                header('HTTP/1.1 400 Bad Request');
+                http_response_code(400);
+                header('Content-Type: application/json');
                 echo json_encode(['error' => "Invalid or missing 'id' parameter."], JSON_PRETTY_PRINT);
                 break;
             case 401:
-                header('HTTP/1.1 401 Unauthorized');
+                http_response_code(401);
+                header('Content-Type: application/json');
                 echo json_encode(['error' => 'Unauthorized. Twitch access token is invalid or has expired.'], JSON_PRETTY_PRINT);
                 break;
             case 500:
-                header('HTTP/1.1 500 Internal Server Error');
+                http_response_code(500);
+                header('Content-Type: application/json');
                 echo json_encode(['error' => 'Internal Server error.'], JSON_PRETTY_PRINT);
                 break;
         }

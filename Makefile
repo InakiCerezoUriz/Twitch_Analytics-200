@@ -10,7 +10,7 @@ build-image:
 	docker build -t $(PROJECT_NAME) .
 
 build-container:
-	docker run -dt --name $(CONTAINER_NAME) -v $$(pwd):$(WORKDIR) -w $(WORKDIR) $(PROJECT_NAME)
+	docker run -dt -p 8000:8000 --name $(CONTAINER_NAME) -v $$(pwd):$(WORKDIR) -w $(WORKDIR) $(PROJECT_NAME)
 	docker exec $(CONTAINER_NAME) composer install
 
 start:
