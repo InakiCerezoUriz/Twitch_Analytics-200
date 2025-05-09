@@ -13,10 +13,14 @@
 |
 */
 
+/*
 $router->post('/register', function () {
     require __DIR__ . '/../register.php';
     register();
 });
+*/
+
+$router->post('/register', 'Register\RegisterController@register');
 
 $router->post('/token', function () {
     require_once __DIR__ . '/../token.php';
@@ -63,6 +67,8 @@ $router->get('/analytics/user', function () {
 
     getUserById($_GET['id']);
 });
+
+//$router->get('/analytics/user', 'GetUserById\GetUserByIdController@index');
 
 $router->get('/analytics/streams', function () {
     require_once __DIR__ . '/../getStreams.php';
