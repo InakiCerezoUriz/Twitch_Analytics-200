@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use JetBrains\PhpStorm\NoReturn;
 use PDO;
 
 class DataBaseRepository
@@ -39,6 +40,46 @@ class DataBaseRepository
         $insertStmt->execute();
     }
 
+    public function getUserFromDataBase(string $id): ?array
+    {
+        $pdo = $this->getConnection();
+
+        $sql = $pdo->prepare('SELECT * FROM users WHERE id = :id');
+        $sql->bindParam(':id', $id);
+        $sql->execute();
+        $result = $sql->fetch(PDO::FETCH_ASSOC);
+
+        return $result ?: null;
+    }
+
+    public function insertUserInDataBase($data): void
+    {
+        $pdo = $this->getConnection();
+
+        $stmt = $pdo->prepare(
+            'INSERT INTO users (
+                                        id, login, display_name, type, broadcaster_type, description, 
+                                        profile_image_url, offline_image_url, view_count, created_at
+                                    ) VALUES (
+                                        :id, :login, :display_name, :type, :broadcaster_type, :description, 
+                                        :profile_image_url, :offline_image_url, :view_count, :created_at
+                                    )'
+        );
+        $stmt->bindParam(':id', $data['id'], PDO::PARAM_STR);
+        $stmt->bindParam(':login', $data['login'], PDO::PARAM_STR);
+        $stmt->bindParam(':display_name', $data['display_name'], PDO::PARAM_STR);
+        $stmt->bindParam(':type', $data['type'], PDO::PARAM_STR);
+        $stmt->bindParam(':broadcaster_type', $data['broadcaster_type'], PDO::PARAM_STR);
+        $stmt->bindParam(':description', $data['description'], PDO::PARAM_STR);
+        $stmt->bindParam(':profile_image_url', $data['profile_image_url'], PDO::PARAM_STR);
+        $stmt->bindParam(':offline_image_url', $data['offline_image_url'], PDO::PARAM_STR);
+        $stmt->bindParam(':view_count', $data['view_count'], PDO::PARAM_INT);
+        $stmt->bindParam(':created_at', $data['created_at'], PDO::PARAM_STR);
+
+        $stmt->execute();
+    }
+
+
     private function getConnection(): PDO
     {
         if ($this->db === null) {
@@ -71,4 +112,5 @@ class DataBaseRepository
             return null;
         }
     }
+
 }
