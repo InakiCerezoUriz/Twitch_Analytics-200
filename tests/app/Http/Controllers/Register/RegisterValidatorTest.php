@@ -9,7 +9,10 @@ use PHPUnit\Framework\TestCase;
 
 class RegisterValidatorTest extends TestCase
 {
-    public function testGivenValidEmailReturnsEmail(): void
+    /**
+     * @test
+     */
+    public function givenValidEmailReturnsEmail(): void
     {
         $validator = new RegisterValidator();
         $email     = 'test@example.com';
@@ -19,6 +22,9 @@ class RegisterValidatorTest extends TestCase
         $this->assertEquals($email, $result);
     }
 
+    /**
+     * @test
+     */
     public function testGivenEmptyEmailReturnsErrorMessage(): void
     {
         $validator = new RegisterValidator();
@@ -28,6 +34,9 @@ class RegisterValidatorTest extends TestCase
         $validator->validateEmail('');
     }
 
+    /**
+     * @test
+     */
     public function testGivenNullEmailReturnsErrorMessage(): void
     {
         $validator = new RegisterValidator();
@@ -37,6 +46,9 @@ class RegisterValidatorTest extends TestCase
         $validator->validateEmail(null);
     }
 
+    /**
+     * @test
+     */
     public function testGivenInvalidEmailReturnsErrorMessage(): void
     {
         $validator = new RegisterValidator();

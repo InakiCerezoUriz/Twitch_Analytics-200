@@ -25,8 +25,4 @@ class UserRegisterService
             'api_key' => $apiKey,
         ], 200);
     }
-
-
-
-
 }
