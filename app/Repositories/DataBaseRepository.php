@@ -2,7 +2,6 @@
 
 namespace App\Repositories;
 
-use JetBrains\PhpStorm\NoReturn;
 use PDO;
 
 class DataBaseRepository
@@ -112,5 +111,4 @@ class DataBaseRepository
             return null;
         }
     }
-
 }
