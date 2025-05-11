@@ -108,7 +108,7 @@ class DataBaseRepository
         $stmt = $pdo->prepare('SELECT * FROM token_twitch LIMIT 1');
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return [strtotime($result['expiracion']), $result['token']];
+        return [strtotime($result['expiracion']), $result['token']] ?: [0, null];
     }
 
     public function updateApiTokenInDataBase(array $data): void

@@ -9,7 +9,7 @@ class TwitchApiRepository
         $api_url = 'https://api.twitch.tv/helix/users?id=' . $id;
 
         $headers = [
-            "Authorization: Bearer $token",  // Token
+            'Authorization: Bearer ' . $token,  // Token
             'Client-Id: pdp08hcdlqz3u2l18wz5eeu6kyll93',  // Client ID de la aplicación de twitch
             'Content-Type: application/json',
         ];
