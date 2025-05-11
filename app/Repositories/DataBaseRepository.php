@@ -8,7 +8,7 @@ class DataBaseRepository
 {
     private ?PDO $db = null;
 
-    public function getApiKey(string $email)
+    public function getApiKey(string $email): ?string
     {
         $pdo = $this->getConnection();
 
@@ -37,6 +37,29 @@ class DataBaseRepository
         $insertStmt->bindValue(':email', $email, PDO::PARAM_STR);
         $insertStmt->bindValue(':api_key', $apiKey, PDO::PARAM_STR);
         $insertStmt->execute();
+    }
+
+    public function getTokenFromDataBase(string $email): ?array
+    {
+        $pdo = $this->getConnection();
+
+        $stmt = $pdo->prepare('SELECT api_key, email, token, fechaexpiracion FROM usuario WHERE email = :email');
+        $stmt->bindValue(':email', $email);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+    }
+
+    public function updateUserTokenInDataBase(array $nuevoToken, $email1): void
+    {
+        $pdo = $this->getConnection();
+
+        $stmt = $pdo->prepare(
+            'UPDATE usuario SET token = :token, fechaexpiracion = :fechaExpiracion WHERE email = :email'
+        );
+        $stmt->bindValue(':token', $nuevoToken['token'], PDO::PARAM_STR);
+        $stmt->bindValue(':fechaExpiracion', $nuevoToken['expiracion'], PDO::PARAM_STR);
+        $stmt->bindValue(':email', $email1, PDO::PARAM_STR);
+        $stmt->execute();
     }
 
     private function getConnection(): PDO

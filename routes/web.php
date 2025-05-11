@@ -22,6 +22,8 @@ $router->post('/register', function () {
 
 $router->post('/register', 'Register\RegisterController@register');
 
+$router->post('/token', 'Token\TokenController@getToken');
+/*
 $router->post('/token', function () {
     require_once __DIR__ . '/../token.php';
 
@@ -54,6 +56,7 @@ $router->post('/token', function () {
 
     token($data['email'], $data['api_key']);
 });
+*/
 
 $router->get('/analytics/user', function () {
     require_once __DIR__ . '/../getUserById.php';

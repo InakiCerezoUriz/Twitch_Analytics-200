@@ -43,6 +43,13 @@ $app->singleton(
     App\Console\Kernel::class
 );
 
+$app->bind(
+    App\Http\Controllers\Token\TokenValidator::class
+);
+
+$app->bind(
+    App\Services\TokenService::class
+);
 
 /*
 |--------------------------------------------------------------------------

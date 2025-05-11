@@ -2,7 +2,7 @@
 
 namespace TwitchAnalytics\Tests\app\Http\Controllers\Register;
 
-use App\Exceptions\EmptyParameterException;
+use App\Exceptions\EmptyEmailException;
 use App\Exceptions\InvalidArgumentException;
 use App\Http\Controllers\Register\RegisterValidator;
 use PHPUnit\Framework\TestCase;
@@ -29,7 +29,7 @@ class RegisterValidatorTest extends TestCase
     {
         $validator = new RegisterValidator();
 
-        $this->expectException(EmptyParameterException::class);
+        $this->expectException(EmptyEmailException::class);
 
         $validator->validateEmail('');
     }
@@ -41,7 +41,7 @@ class RegisterValidatorTest extends TestCase
     {
         $validator = new RegisterValidator();
 
-        $this->expectException(EmptyParameterException::class);
+        $this->expectException(EmptyEmailException::class);
 
         $validator->validateEmail(null);
     }
