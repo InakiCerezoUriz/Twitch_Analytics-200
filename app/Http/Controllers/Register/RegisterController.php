@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Register;
 
-use App\Exceptions\EmptyParameterException;
+use App\Exceptions\EmptyEmailParameterException;
 use App\Exceptions\InvalidArgumentException;
 use App\Services\UserRegisterService;
 use Illuminate\Http\JsonResponse;
@@ -24,20 +24,13 @@ class RegisterController extends BaseController
 
     public function register(Request $request): JsonResponse
     {
-        include_once __DIR__ . '/../../../../src/funcionesAuxiliares/conectarBBDD.php';
-        include_once __DIR__ . '/../../../../src/funcionesAuxiliares/generarApiKey.php';
-
         try {
             $email = $this->validator->validateEmail($request->get('email'));
 
             return $this->userRegisterService->register($email);
-        } catch (EmptyParameterException) {
+        } catch (EmptyEmailParameterException | InvalidArgumentException $e) {
             return new JsonResponse([
-                'error' => 'The email is mandatory',
-            ], 400);
-        } catch (InvalidArgumentException) {
-            return new JsonResponse([
-                'error' => 'The email must be a valid email address',
+                'error' => $e->getMessage(),
             ], 400);
         }
     }

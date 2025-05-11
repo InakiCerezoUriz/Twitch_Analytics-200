@@ -38,9 +38,12 @@ $app->singleton(
     App\Exceptions\Handler::class
 );
 
-$app->singleton(
-    Illuminate\Contracts\Console\Kernel::class,
-    App\Console\Kernel::class
+$app->bind(
+    App\Http\Controllers\GetUserById\GetUserByIdValidator::class
+);
+
+$app->bind(
+    App\Services\GetUserByIdService::class
 );
 
 $app->bind(
@@ -50,6 +53,7 @@ $app->bind(
 $app->bind(
     App\Services\TokenService::class
 );
+
 
 /*
 |--------------------------------------------------------------------------

@@ -38,8 +38,8 @@ class DataBaseRepository
         $insertStmt->bindValue(':api_key', $apiKey, PDO::PARAM_STR);
         $insertStmt->execute();
     }
-
-    public function getTokenFromDataBase(string $email): ?array
+  
+  public function getTokenFromDataBase(string $email): ?array
     {
         $pdo = $this->getConnection();
 
@@ -48,17 +48,56 @@ class DataBaseRepository
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
-
-    public function updateUserTokenInDataBase(array $nuevoToken, $email1): void
+  
+  public function updateUserTokenInDataBase(array $nuevoToken, $email1): void
     {
         $pdo = $this->getConnection();
 
         $stmt = $pdo->prepare(
-            'UPDATE usuario SET token = :token, fechaexpiracion = :fechaExpiracion WHERE email = :email'
+              'UPDATE usuario SET token = :token, fechaexpiracion = :fechaExpiracion WHERE email = :email'
         );
         $stmt->bindValue(':token', $nuevoToken['token'], PDO::PARAM_STR);
         $stmt->bindValue(':fechaExpiracion', $nuevoToken['expiracion'], PDO::PARAM_STR);
         $stmt->bindValue(':email', $email1, PDO::PARAM_STR);
+        $stmt->execute();
+    }
+
+    public function getUserFromDataBase(string $id): ?array
+    {
+        $pdo = $this->getConnection();
+
+        $sql = $pdo->prepare('SELECT * FROM users WHERE id = :id');
+        $sql->bindParam(':id', $id);
+        $sql->execute();
+        $result = $sql->fetch(PDO::FETCH_ASSOC);
+
+        return $result ?: null;
+    }
+
+    public function insertUserInDataBase($data): void
+    {
+      $pdo = $this->getConnection();
+
+        $stmt = $pdo->prepare(
+            'INSERT INTO users (
+                                        id, login, display_name, type, broadcaster_type, description, 
+                                        profile_image_url, offline_image_url, view_count, created_at
+                                    ) VALUES (
+                                        :id, :login, :display_name, :type, :broadcaster_type, :description, 
+                                        :profile_image_url, :offline_image_url, :view_count, :created_at
+                                    )'
+        );
+        $stmt->bindParam(':id', $data['id'], PDO::PARAM_STR);
+        $stmt->bindParam(':login', $data['login'], PDO::PARAM_STR);
+        $stmt->bindParam(':display_name', $data['display_name'], PDO::PARAM_STR);
+        $stmt->bindParam(':type', $data['type'], PDO::PARAM_STR);
+        $stmt->bindParam(':broadcaster_type', $data['broadcaster_type'], PDO::PARAM_STR);
+        $stmt->bindParam(':description', $data['description'], PDO::PARAM_STR);
+        $stmt->bindParam(':profile_image_url', $data['profile_image_url'], PDO::PARAM_STR);
+        $stmt->bindParam(':offline_image_url', $data['offline_image_url'], PDO::PARAM_STR);
+        $stmt->bindParam(':view_count', $data['view_count'], PDO::PARAM_INT);
+        $stmt->bindParam(':created_at', $data['created_at'], PDO::PARAM_STR);
+
         $stmt->execute();
     }
 
