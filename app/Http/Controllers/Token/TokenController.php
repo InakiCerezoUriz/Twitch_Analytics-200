@@ -23,9 +23,6 @@ class TokenController
     }
     public function getToken(Request $request): JsonResponse
     {
-        include_once __DIR__ . '/../../../../src/funcionesAuxiliares/conectarBBDD.php';
-        include_once __DIR__ . '/../../../../src/funcionesAuxiliares/generarToken.php';
-
         try {
             $email   = $this->validator->validateEmail($request->get('email'));
             $api_key = $this->validator->validateApiKey($request->get('api_key'));
