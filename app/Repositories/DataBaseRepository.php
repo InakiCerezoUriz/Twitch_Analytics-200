@@ -87,16 +87,16 @@ class DataBaseRepository
                                         :profile_image_url, :offline_image_url, :view_count, :created_at
                                     )'
         );
-        $stmt->bindParam(':id', $data['id'], PDO::PARAM_STR);
-        $stmt->bindParam(':login', $data['login'], PDO::PARAM_STR);
-        $stmt->bindParam(':display_name', $data['display_name'], PDO::PARAM_STR);
-        $stmt->bindParam(':type', $data['type'], PDO::PARAM_STR);
-        $stmt->bindParam(':broadcaster_type', $data['broadcaster_type'], PDO::PARAM_STR);
-        $stmt->bindParam(':description', $data['description'], PDO::PARAM_STR);
-        $stmt->bindParam(':profile_image_url', $data['profile_image_url'], PDO::PARAM_STR);
-        $stmt->bindParam(':offline_image_url', $data['offline_image_url'], PDO::PARAM_STR);
+        $stmt->bindParam(':id', $data['id']);
+        $stmt->bindParam(':login', $data['login']);
+        $stmt->bindParam(':display_name', $data['display_name']);
+        $stmt->bindParam(':type', $data['type']);
+        $stmt->bindParam(':broadcaster_type', $data['broadcaster_type']);
+        $stmt->bindParam(':description', $data['description']);
+        $stmt->bindParam(':profile_image_url', $data['profile_image_url']);
+        $stmt->bindParam(':offline_image_url', $data['offline_image_url']);
         $stmt->bindParam(':view_count', $data['view_count'], PDO::PARAM_INT);
-        $stmt->bindParam(':created_at', $data['created_at'], PDO::PARAM_STR);
+        $stmt->bindParam(':created_at', $data['created_at']);
 
         $stmt->execute();
     }
@@ -129,6 +129,17 @@ class DataBaseRepository
         $stmt->bindValue(':token', $data['access_token']);
         $stmt->bindValue(':expiracion', date('Y-m-d H:i:s', time() + $data['expires_in']));
         $stmt->execute();
+    }
+
+    public function getTokenExpirationDateFromDataBase(string $token): int|null
+    {
+        $pdo = $this->getConnection();
+
+        $stmt = $pdo->prepare('SELECT fechaexpiracion FROM usuario WHERE token = :token');
+        $stmt->bindValue(':token', $token);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return isset($result['fechaexpiracion']) ? strtotime($result['fechaexpiracion']) : null;
     }
 
     private function getConnection(): PDO

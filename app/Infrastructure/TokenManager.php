@@ -44,4 +44,15 @@ class TokenManager
 
         return $data['access_token'];
     }
+
+  public function tokenActive(string $token): bool
+    {
+        $fechaExpiracion = $this->dataBaseRepository->getTokenExpirationDateFromDataBase($token);
+
+        if (!$fechaExpiracion) {
+            return false;
+        }
+
+        return ($fechaExpiracion > time());
+    }
 }
