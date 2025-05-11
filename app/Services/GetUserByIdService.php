@@ -42,6 +42,7 @@ class GetUserByIdService
                         $this->dataBaseRepository->insertUserInDataBase($data['data'][0]);
                         return new JsonResponse($data['data'][0], 200);
                     }
+                    // no break
                 case 400:
                     return new JsonResponse([
                         'error' => "Invalid or missing 'id' parameter.",
