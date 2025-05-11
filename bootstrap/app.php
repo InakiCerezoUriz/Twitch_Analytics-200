@@ -46,6 +46,13 @@ $app->bind(
     App\Services\GetUserByIdService::class
 );
 
+$app->bind(
+    App\Http\Controllers\Token\TokenValidator::class
+);
+
+$app->bind(
+    App\Services\TokenService::class
+);
 
 
 /*

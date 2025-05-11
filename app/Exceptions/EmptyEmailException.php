@@ -2,7 +2,7 @@
 
 namespace App\Exceptions;
 
-class EmptyParameterException extends \RuntimeException
+class EmptyEmailException extends \RuntimeException
 {
     public function __construct()
     {
