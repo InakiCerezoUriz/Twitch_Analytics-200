@@ -24,12 +24,10 @@ class GetUserByIdController extends BaseController
     public function getUser(Request $request): JsonResponse
     {
 
-        require_once __DIR__ . '/../../../../src/funcionesAuxiliares/conseguirToken.php';
         require_once __DIR__ . '/../../../../src/funcionesAuxiliares/comprobarExpiracion.php';
         require_once __DIR__ . '/../../../../src/funcionesAuxiliares/comprobarAuthorization.php';
-        require_once __DIR__ . '/../../../../src/funcionesAuxiliares/iniciarCurl.php';
 
-        //comprobarAuthorization();
+        comprobarAuthorization();
 
         $authHeader = $request->header('Authorization');
         $token      = str_replace('Bearer ', '', $authHeader);
