@@ -13,13 +13,6 @@
 |
 */
 
-/*
-$router->post('/register', function () {
-    require __DIR__ . '/../register.php';
-    register();
-});
-*/
-
 $router->post('/register', 'Register\RegisterController@register');
 
 $router->post('/token', function () {
@@ -55,20 +48,21 @@ $router->post('/token', function () {
     token($data['email'], $data['api_key']);
 });
 
-$router->get('/analytics/user', function () {
-    require_once __DIR__ . '/../getUserById.php';
+//$router->get('/analytics/user', function () {
+//    require_once __DIR__ . '/../getUserById.php';
+//
+//    if (empty($_GET['id'])) {
+//        http_response_code(400);
+//        header('Content-Type: application/json');
+//        echo json_encode(['error' => "Invalid or missing 'id' parameter."], JSON_PRETTY_PRINT);
+//        return;
+//    }
+//
+//    getUserById($_GET['id']);
+//});
 
-    if (empty($_GET['id'])) {
-        http_response_code(400);
-        header('Content-Type: application/json');
-        echo json_encode(['error' => "Invalid or missing 'id' parameter."], JSON_PRETTY_PRINT);
-        return;
-    }
+$router->get('/analytics/user', 'GetUserById\GetUserByIdController@getUser');
 
-    getUserById($_GET['id']);
-});
-
-//$router->get('/analytics/user', 'GetUserById\GetUserByIdController@index');
 
 $router->get('/analytics/streams', function () {
     require_once __DIR__ . '/../getStreams.php';
