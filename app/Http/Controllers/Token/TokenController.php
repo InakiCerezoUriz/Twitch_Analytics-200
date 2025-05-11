@@ -8,7 +8,6 @@ use App\Exceptions\InvalidArgumentException;
 use App\Services\TokenService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use PDO;
 
 class TokenController
 {
@@ -19,7 +18,7 @@ class TokenController
         TokenValidator $validator,
         TokenService $TokenService
     ) {
-        $this->validator = $validator;
+        $this->validator    = $validator;
         $this->TokenService = $TokenService;
     }
     public function getToken(Request $request): JsonResponse

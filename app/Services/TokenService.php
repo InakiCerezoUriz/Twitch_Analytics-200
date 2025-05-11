@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Repositories\DataBaseRepository;
 use Illuminate\Http\JsonResponse;
-use PDO;
 
 class TokenService
 {
