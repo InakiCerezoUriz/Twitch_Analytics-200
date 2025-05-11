@@ -2,17 +2,21 @@
 
 namespace App\Services;
 
+use App\Infrastructure\TokenManager;
 use App\Repositories\DataBaseRepository;
 use Illuminate\Http\JsonResponse;
 
 class TokenService
 {
     private DataBaseRepository $dataBaseRepository;
+    private TokenManager $tokenManager;
 
     public function __construct(
-        DataBaseRepository $dataBaseRepository
+        DataBaseRepository $dataBaseRepository,
+        TokenManager $tokenManager
     ) {
         $this->dataBaseRepository = $dataBaseRepository;
+        $this->tokenManager       = $tokenManager;
     }
     public function getToken(string $email, string $api_key): JsonResponse
     {
@@ -31,7 +35,7 @@ class TokenService
         }
 
         if ($usuario['token'] === null || $usuario['fechaexpiracion'] < date('Y-m-d H:i:s')) {
-            $nuevoToken = generarToken();
+            $nuevoToken = $this->tokenManager->generarToken();
             $this->dataBaseRepository->updateUserTokenInDataBase($nuevoToken, $usuario['email']);
             $resultado = ['token' => $nuevoToken['token']];
         } else {
