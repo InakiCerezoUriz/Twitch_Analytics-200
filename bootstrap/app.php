@@ -54,6 +54,9 @@ $app->bind(
     App\Services\TokenService::class
 );
 
+$app->bind(
+    App\Repositories\DataBaseRepository::class
+);
 
 /*
 |--------------------------------------------------------------------------
@@ -78,6 +81,10 @@ $app->configure('app');
 | route or middleware that'll be assigned to some specific routes.
 |
 */
+
+$app->routeMiddleware([
+    'auth' => App\Http\Middleware\AuthorizationMiddleware::class,
+]);
 
 // $app->middleware([
 //     App\Http\Middleware\ExampleMiddleware::class

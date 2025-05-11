@@ -38,8 +38,8 @@ class DataBaseRepository
         $insertStmt->bindValue(':api_key', $apiKey, PDO::PARAM_STR);
         $insertStmt->execute();
     }
-  
-  public function getTokenFromDataBase(string $email): ?array
+
+    public function getTokenFromDataBase(string $email): ?array
     {
         $pdo = $this->getConnection();
 
@@ -48,13 +48,13 @@ class DataBaseRepository
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
-  
-  public function updateUserTokenInDataBase(array $nuevoToken, $email1): void
+
+    public function updateUserTokenInDataBase(array $nuevoToken, $email1): void
     {
         $pdo = $this->getConnection();
 
         $stmt = $pdo->prepare(
-              'UPDATE usuario SET token = :token, fechaexpiracion = :fechaExpiracion WHERE email = :email'
+            'UPDATE usuario SET token = :token, fechaexpiracion = :fechaExpiracion WHERE email = :email'
         );
         $stmt->bindValue(':token', $nuevoToken['token'], PDO::PARAM_STR);
         $stmt->bindValue(':fechaExpiracion', $nuevoToken['expiracion'], PDO::PARAM_STR);
@@ -76,7 +76,7 @@ class DataBaseRepository
 
     public function insertUserInDataBase($data): void
     {
-      $pdo = $this->getConnection();
+        $pdo = $this->getConnection();
 
         $stmt = $pdo->prepare(
             'INSERT INTO users (
@@ -87,18 +87,59 @@ class DataBaseRepository
                                         :profile_image_url, :offline_image_url, :view_count, :created_at
                                     )'
         );
-        $stmt->bindParam(':id', $data['id'], PDO::PARAM_STR);
-        $stmt->bindParam(':login', $data['login'], PDO::PARAM_STR);
-        $stmt->bindParam(':display_name', $data['display_name'], PDO::PARAM_STR);
-        $stmt->bindParam(':type', $data['type'], PDO::PARAM_STR);
-        $stmt->bindParam(':broadcaster_type', $data['broadcaster_type'], PDO::PARAM_STR);
-        $stmt->bindParam(':description', $data['description'], PDO::PARAM_STR);
-        $stmt->bindParam(':profile_image_url', $data['profile_image_url'], PDO::PARAM_STR);
-        $stmt->bindParam(':offline_image_url', $data['offline_image_url'], PDO::PARAM_STR);
+        $stmt->bindParam(':id', $data['id']);
+        $stmt->bindParam(':login', $data['login']);
+        $stmt->bindParam(':display_name', $data['display_name']);
+        $stmt->bindParam(':type', $data['type']);
+        $stmt->bindParam(':broadcaster_type', $data['broadcaster_type']);
+        $stmt->bindParam(':description', $data['description']);
+        $stmt->bindParam(':profile_image_url', $data['profile_image_url']);
+        $stmt->bindParam(':offline_image_url', $data['offline_image_url']);
         $stmt->bindParam(':view_count', $data['view_count'], PDO::PARAM_INT);
-        $stmt->bindParam(':created_at', $data['created_at'], PDO::PARAM_STR);
+        $stmt->bindParam(':created_at', $data['created_at']);
 
         $stmt->execute();
+    }
+
+    public function getApiTokenFromDataBase(): array
+    {
+        $pdo = $this->getConnection();
+
+        $stmt = $pdo->prepare('SELECT * FROM token_twitch LIMIT 1');
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return [strtotime($result['expiracion']), $result['token']];
+    }
+
+    public function updateApiTokenInDataBase(array $data): void
+    {
+        $pdo = $this->getConnection();
+
+        $stmt = $pdo->prepare('UPDATE token_twitch SET token = :token, expiracion = :expiracion');
+        $stmt->bindValue(':token', $data['access_token']);
+        $stmt->bindValue(':expiracion', date('Y-m-d H:i:s', time() + $data['expires_in']));
+        $stmt->execute();
+    }
+
+    public function insertApiTokenInDataBase(array $data): void
+    {
+        $pdo = $this->getConnection();
+
+        $stmt = $pdo->prepare('INSERT INTO token_twitch (token, expiracion) VALUES (:token, :expiracion)');
+        $stmt->bindValue(':token', $data['access_token']);
+        $stmt->bindValue(':expiracion', date('Y-m-d H:i:s', time() + $data['expires_in']));
+        $stmt->execute();
+    }
+
+    public function getTokenExpirationDateFromDataBase(string $token): int|null
+    {
+        $pdo = $this->getConnection();
+
+        $stmt = $pdo->prepare('SELECT fechaexpiracion FROM usuario WHERE token = :token');
+        $stmt->bindValue(':token', $token);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return isset($result['fechaexpiracion']) ? strtotime($result['fechaexpiracion']) : null;
     }
 
     private function getConnection(): PDO
