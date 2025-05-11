@@ -2,11 +2,9 @@
 
 namespace TwitchAnalytics\Tests\app\Http\Controllers\Register;
 
-use App\Http\Controllers\Register\RegisterController;
-use App\Http\Controllers\Register\RegisterValidator;
 use App\Services\UserRegisterService;
-use Illuminate\Http\Request;
-use PHPUnit\Framework\TestCase;
+use Illuminate\Http\JsonResponse;
+use TwitchAnalytics\Tests\TestCase;
 
 class RegisterControllerTest extends TestCase
 {
@@ -15,19 +13,15 @@ class RegisterControllerTest extends TestCase
      */
     public function gets400WhenEmailParameterIsMissing(): void
     {
-        $request   = new Request();
-        $validator = new RegisterValidator();
+        $response = $this->call(
+            'POST',
+            '/register'
+        );
 
-        $mockService = $this->createMock(UserRegisterService::class);
-        $controller  = new RegisterController($validator, $mockService);
-
-        $response     = $controller->register($request);
-        $responseData = json_decode($response->getContent(), true);
-
-        $this->assertEquals(400, $response->getStatusCode());
-        $this->assertEquals([
+        $response->assertStatus(400);
+        $response->assertJson([
             'error' => 'The email is mandatory',
-        ], $responseData);
+        ]);
     }
 
     /**
@@ -35,19 +29,18 @@ class RegisterControllerTest extends TestCase
      */
     public function gets400WhenEmailParameterIsInvalid(): void
     {
-        $request   = new Request(['email' => 'invalid-email']);
-        $validator = new RegisterValidator();
+        $response = $this->call(
+            'POST',
+            '/register',
+            [
+                'email' => 'invalid-email',
+            ]
+        );
 
-        $mockService = $this->createMock(UserRegisterService::class);
-        $controller  = new RegisterController($validator, $mockService);
-
-        $response     = $controller->register($request);
-        $responseData = json_decode($response->getContent(), true);
-
-        $this->assertEquals(400, $response->getStatusCode());
-        $this->assertEquals([
+        $response->assertStatus(400);
+        $response->assertJson([
             'error' => 'The email must be a valid email address',
-        ], $responseData);
+        ]);
     }
 
     /**
@@ -55,22 +48,29 @@ class RegisterControllerTest extends TestCase
      */
     public function gets200WhenEmailParameterValid(): void
     {
-        $request   = new Request(['email' => 'test@example.com']);
-        $validator = new RegisterValidator();
-
-        $mockResponse = response()->json(['apiKey' => 'api_key_value'], 200);
-        $mockService  = $this->createMock(UserRegisterService::class);
-        $mockService->method('register')
-            ->willReturn($mockResponse);
-
-        $controller = new RegisterController($validator, $mockService);
-
-        $response     = $controller->register($request);
-        $responseData = json_decode($response->getContent(), true);
-
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals([
+        $mockResponse = new JsonResponse([
             'apiKey' => 'api_key_value',
-        ], $responseData);
+        ], 200);
+
+        $mockService = \Mockery::mock(UserRegisterService::class);
+        $mockService->shouldReceive('register')
+            ->once()
+            ->with('test@example.com')
+            ->andReturn($mockResponse);
+
+        $this->app->instance(UserRegisterService::class, $mockService);
+
+        $response = $this->call(
+            'POST',
+            '/register',
+            [
+                'email' => 'test@example.com',
+            ]
+        );
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'apiKey' => 'api_key_value',
+        ]);
     }
 }
