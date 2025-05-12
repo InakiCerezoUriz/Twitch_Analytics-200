@@ -2,7 +2,7 @@
 
 namespace App\Exceptions;
 
-class EmptyOrInvalidIdException extends \RuntimeException
+class EmptyOrInvalidLimitException extends \RuntimeException
 {
     public function __construct()
     {
