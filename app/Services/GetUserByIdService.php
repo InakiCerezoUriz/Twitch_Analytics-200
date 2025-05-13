@@ -42,11 +42,6 @@ class GetUserByIdService
                         $this->dataBaseRepository->insertUserInDataBase($data['data'][0]);
                         return new JsonResponse($data['data'][0], 200);
                     }
-                    // no break
-                case 400:
-                    return new JsonResponse([
-                        'error' => "Invalid or missing 'id' parameter.",
-                    ], 400);
                 case 401:
                     return new JsonResponse([
                         'error' => 'Unauthorized. Twitch access token is invalid or has expired.',
@@ -58,9 +53,5 @@ class GetUserByIdService
             }
         }
         return new JsonResponse($result, 200);
-    }
-
-    private function getToken()
-    {
     }
 }

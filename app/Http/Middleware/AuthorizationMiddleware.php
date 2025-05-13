@@ -25,7 +25,7 @@ class AuthorizationMiddleware
 
         if (!$tokenManager->tokenActive($token)) {
             return new JsonResponse([
-                'error' => 'Unauthorized. Token is invalid or has expired.',
+                'error' => 'Unauthorized. Token is invalid or expired.',
             ], 401);
         }
 

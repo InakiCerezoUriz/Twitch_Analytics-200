@@ -2,55 +2,53 @@
 
 namespace App\Services;
 
+use App\Infrastructure\TokenManager;
 use App\Repositories\TwitchApiRepository;
 use Illuminate\Http\JsonResponse;
 
 class GetEnrichedStreamsService
 {
     private TwitchApiRepository $twitchApiRepository;
+    private TokenManager $tokenManager;
+
     public function __construct(
-        TwitchApiRepository $twitchApiRepository
+        TwitchApiRepository $twitchApiRepository,
+        TokenManager $tokenManager
     ) {
         $this->twitchApiRepository = $twitchApiRepository;
+        $this->tokenManager        = $tokenManager;
     }
 
     public function getEnriched(string $limit): JsonResponse
     {
-        list($response, $httpCode) = $this->twitchApiRepository->getStreamsFromTwitchApi();
+        $token = $this->tokenManager->getToken();
+
+        list($response, $httpCode) = $this->twitchApiRepository->getStreamsFromTwitchApi($token);
 
         if ($httpCode !== 200) {
-            $this->handleError($httpCode);
+            return $this->handleError($httpCode);
         }
 
-        $data = json_decode($response, true);
-        $lista = $this->buildEnrichedStreamList($data['data'], $limit);
+        $data  = json_decode($response, true);
+        $lista = $this->buildEnrichedStreamList($data['data'], $limit, $token);
 
         return new JsonResponse($lista, 200);
     }
 
-    function handleError(int $res): JsonResponse
+    private function handleError(int $res): JsonResponse
     {
-        switch ($res) {
-            case 400:
-                return new JsonResponse([
-                    'error' => "Invalid or missing 'limit' parameter.",
-                ], 400);
-            case 401:
-                return new JsonResponse([
-                    'error' => 'Unauthorized. Twitch access token is invalid or has expired.',
-                ], 401);
-            default:
-                return new JsonResponse([
-                    'error' => 'Internal Server error.',
-                ], 500);
-        }
+        return $res == 401 ? new JsonResponse([
+            'error' => 'Unauthorized. Twitch access token is invalid or has expired.',
+        ], 401) : new JsonResponse([
+            'error' => 'Internal Server error.',
+        ], 500);
     }
-    function buildEnrichedStreamList(array $streams, int $limit): array
+    private function buildEnrichedStreamList(array $streams, int $limit, string $token): array
     {
         $lista = [];
         for ($i = 0; $i < $limit && isset($streams[$i]); $i++) {
             $user_id  = $streams[$i]['user_id'];
-            $userData = $this->twitchApiRepository->getUserData($user_id);
+            $userData = $this->twitchApiRepository->getUserData($user_id, $token);
 
             $lista[] = [
                 'stream_id'         => $streams[$i]['id'],

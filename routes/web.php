@@ -30,10 +30,10 @@ $router->get('/analytics/streams', function () {
     getStreams();
 });
 
-$router->get('/analytics/streams/enriched', function () {
-    require_once __DIR__ . '/../getEnrichedStreams.php';
-    getEnrichedStreams();
-});
+$router->get('/analytics/streams/enriched', [
+    'middleware' => 'auth',
+    'uses'       => 'GetEnrichedStreams\GetEnrichedStreamsController@getEnriched',
+]);
 
 $router->get('/analytics/topsofthetops', function () {
     require_once __DIR__ . '/../getTopsOfTops.php';
