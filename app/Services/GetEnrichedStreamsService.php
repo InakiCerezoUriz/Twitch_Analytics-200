@@ -48,7 +48,6 @@ class GetEnrichedStreamsService
     function buildEnrichedStreamList(array $streams, int $limit): array
     {
         $lista = [];
-
         for ($i = 0; $i < $limit && isset($streams[$i]); $i++) {
             $user_id  = $streams[$i]['user_id'];
             $userData = $this->twitchApiRepository->getUserData($user_id);
