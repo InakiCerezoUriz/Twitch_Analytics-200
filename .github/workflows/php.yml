@@ -37,7 +37,8 @@ jobs:
       - name: Fetch the GIT diff
         id: fetch-diff
         run: |
-          DIFF=$(git -c diff.mnemonicprefix=false -c diff.noprefix=false --no-pager diff -r -p -m -M --full-index --no-color --staged | cat)
+          DIFF=$(git diff --staged --no-color)
+          echo "Diff: $DIFF"
           export GRUMPHP_GIT_WORKING_DIR="$(git rev-parse --show-toplevel)"
-          (cd "./" && printf "%s\n" "${DIFF}" | exec vendor/bin/grumphp git:pre-commit --verbose --skip-success-output)
+          (cd "$GRUMPHP_GIT_WORKING_DIR" && echo "$DIFF" | vendor/bin/grumphp git:pre-commit --verbose --skip-success-output)
         shell: bash
