@@ -47,4 +47,41 @@ class TwitchApiRepository
 
         return $response;
     }
+    public function getStreamsFromTwitchApi(string $token): array
+    {
+        $api_url = 'https://api.twitch.tv/helix/streams';
+
+        $headers = [
+            "Authorization: Bearer $token",  // Token
+            'Client-Id: ' . env('TWITCH_CLIENT_ID'),  // Client ID de la aplicación de twitch
+            'Content-Type: application/json',
+        ];
+
+        $ch = curl_init($api_url);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        $response = curl_exec($ch);
+        $res      = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        return [$response, $res];
+    }
+    public function getUserData(string $userId, string $token): array
+    {
+        $headers = [
+            "Authorization: Bearer $token",  // Token
+            'Client-Id: pdp08hcdlqz3u2l18wz5eeu6kyll93',  // Client ID de la aplicación de twitch
+            'Content-Type: application/json',
+        ];
+        $url = 'https://api.twitch.tv/helix/users?id=' . $userId;
+        $ch  = curl_init($url);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        $data = json_decode($response, true);
+        return $data['data'][0] ?? [];
+    }
 }
