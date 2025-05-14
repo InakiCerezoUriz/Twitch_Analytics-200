@@ -8,6 +8,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      DB_CONNECTION: pgsql
+      DB_HOST: cah8ha8ra8h8i7.cluster-czz5s0kz4scl.eu-west-1.rds.amazonaws.com
+      DB_PORT: 5432
+      DB_DATABASE: dd2e5fnppcb8fb
+      DB_USERNAME: u1d480il6e6sme
+      DB_PASSWORD: p3a5c8480a4dc4d7fa9d971c5e08dd22dbc6c21b20726f09b863b4879a9309eae
 
     steps:
       - name: Descargar Código
