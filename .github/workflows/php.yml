@@ -23,6 +23,10 @@ jobs:
         run: |
           composer install
 
+      - name: Run Tests
+        run: |
+          composer test
+          
       - name: Fetch the GIT diff
         id: fetch-diff
         run: |
@@ -31,6 +35,3 @@ jobs:
           (cd "./" && printf "%s\n" "${DIFF}" | exec vendor/bin/grumphp.bat git:pre-commit '--skip-success-output')
         shell: bash
 
-      - name: Run Tests
-        run: |
-          composer test
