@@ -2,20 +2,23 @@
 
 namespace App\Services;
 
+use App\Infrastructure\TokenManager;
 use App\Repositories\TwitchApiRepository;
 use Illuminate\Http\JsonResponse;
 
 class GetStreamsService
 {
-    private TwitchApiRepository $twitchApiRepository;
     public function __construct(
-        TwitchApiRepository $twitchApiRepository
+        private readonly TwitchApiRepository $twitchApiRepository,
+        private readonly TokenManager $tokenManager
     ) {
-        $this->twitchApiRepository = $twitchApiRepository;
     }
     public function getStreams(): JsonResponse
     {
-        [$response, $res] = $this->twitchApiRepository->getStreamsFromTwitchApi();
+        $token = $this->tokenManager->getToken();
+
+        [$response, $res] = $this->twitchApiRepository->getStreamsFromTwitchApi($token);
+
         switch ($res) {
             case 200:
                 $data  = json_decode($response, true);
