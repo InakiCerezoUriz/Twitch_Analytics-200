@@ -7,20 +7,13 @@ use App\Repositories\DataBaseRepository;
 use App\Repositories\TwitchApiRepository;
 use Illuminate\Http\JsonResponse;
 
-class GetUserByIdService
+readonly class GetUserByIdService
 {
-    private DataBaseRepository $dataBaseRepository;
-    private TwitchApiRepository $twitchApiRepository;
-    private TokenManager $tokenManager;
-
     public function __construct(
-        DataBaseRepository $dataBaseRepository,
-        TwitchApiRepository $twitchApiRepository,
-        TokenManager $tokenManager
+        private DataBaseRepository $dataBaseRepository,
+        private TwitchApiRepository $twitchApiRepository,
+        private TokenManager $tokenManager
     ) {
-        $this->dataBaseRepository  = $dataBaseRepository;
-        $this->twitchApiRepository = $twitchApiRepository;
-        $this->tokenManager        = $tokenManager;
     }
     public function getUser(string $id): JsonResponse
     {

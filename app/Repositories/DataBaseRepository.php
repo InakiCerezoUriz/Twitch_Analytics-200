@@ -142,6 +142,64 @@ class DataBaseRepository
         return isset($result['fechaexpiracion']) ? strtotime($result['fechaexpiracion']) : null;
     }
 
+    public function getUltimaSolicitud(): int
+    {
+        $pdo = $this->getConnection();
+
+        $stmt = $pdo->prepare('SELECT ultima_solicitud FROM cache ORDER BY ultima_solicitud DESC LIMIT 1');
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return strtotime($result['ultima_solicitud'] ?? '0');
+    }
+
+    public function getTops(): array
+    {
+        $pdo = $this->getConnection();
+
+        return $pdo->query('SELECT GAME_NAME, USER_NAME FROM CACHE GROUP BY GAME_NAME, USER_NAME')->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function obtenerInformacionJuego(string $game_name, string $user_name): array
+    {
+        $pdo = $this->getConnection();
+
+        $stmt = $pdo->prepare(
+            'WITH MaxViews AS (
+                SELECT GAME_ID, GAME_NAME, USER_NAME, TITLE, VIEWS, DURATION, CREATED_AT,
+                       ROW_NUMBER() OVER (PARTITION BY GAME_ID, USER_NAME ORDER BY VIEWS DESC) AS row_num
+                FROM CACHE)
+            SELECT c.GAME_ID, c.GAME_NAME, c.USER_NAME, COUNT(*) AS TOTAL_VIDEOS, 
+                   SUM(c.VIEWS) AS TOTAL_VIEWS,
+                   mv.TITLE AS MOST_VIEWED_TITLE, mv.VIEWS AS MOST_VIEWED_VIEWS,
+                   mv.DURATION AS MOST_VIEWED_DURATION, mv.CREATED_AT AS MOST_VIEWED_CREATED_AT
+            FROM CACHE c
+            JOIN MaxViews mv ON c.GAME_ID = mv.GAME_ID AND c.USER_NAME = mv.USER_NAME AND mv.row_num = 1
+            WHERE c.GAME_NAME = :game_name AND c.USER_NAME = :user_name
+            GROUP BY c.GAME_ID, c.GAME_NAME, c.USER_NAME, mv.TITLE, mv.VIEWS, mv.DURATION, mv.CREATED_AT
+            ORDER BY TOTAL_VIEWS DESC'
+        );
+
+        $stmt->bindValue(':game_name', $game_name);
+        $stmt->bindValue(':user_name', $user_name);
+        $stmt->execute();
+
+        $final = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $final[] = array_map('strval', $row);
+        }
+
+        return $final;
+    }
+
+    public function clearCache()
+    {
+        $pdo = $this->getConnection();
+
+        $pdo->exec('DELETE FROM cache');
+    }
+
+
     private function getConnection(): PDO
     {
         if ($this->db === null) {
