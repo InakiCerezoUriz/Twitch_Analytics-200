@@ -7,7 +7,14 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
+    env:
+      DB_CONNECTION: pgsql
+      DB_HOST: cah8ha8ra8h8i7.cluster-czz5s0kz4scl.eu-west-1.rds.amazonaws.com
+      DB_PORT: 5432
+      DB_DATABASE: dd2e5fnppcb8fb
+      DB_USERNAME: u1d480il6e6sme
+      DB_PASSWORD: p3a5c8480a4dc4d7fa9d971c5e08dd22dbc6c21b20726f09b863b4879a9309eae
 
     steps:
       - name: Descargar Código
@@ -23,10 +30,15 @@ jobs:
         run: |
           composer install
 
+      - name: Run Tests
+        run: |
+          composer test
+          
       - name: Fetch the GIT diff
         id: fetch-diff
         run: |
-          DIFF=$(git -c diff.mnemonicprefix=false -c diff.noprefix=false --no-pager diff -r -p -m -M --full-index --no-color --staged | cat)
+          DIFF=$(git diff --staged --no-color)
+          echo "Diff: $DIFF"
           export GRUMPHP_GIT_WORKING_DIR="$(git rev-parse --show-toplevel)"
-          (cd "./" && printf "%s\n" "${DIFF}" | exec vendor/bin/grumphp.bat git:pre-commit '--skip-success-output')
+          (cd "$GRUMPHP_GIT_WORKING_DIR" && echo "$DIFF" | vendor/bin/grumphp git:pre-commit --verbose --skip-success-output)
         shell: bash
