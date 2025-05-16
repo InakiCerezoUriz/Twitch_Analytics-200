@@ -35,8 +35,7 @@ $router->get('/analytics/streams/enriched', [
     'uses'       => 'GetEnrichedStreams\GetEnrichedStreamsController@getEnriched',
 ]);
 
-$router->get('/analytics/topsofthetops', function () {
-    require_once __DIR__ . '/../getTopsOfTops.php';
-    $since = isset($_GET['since']) ? $_GET['since'] : 600;
-    getTopOfTops($since);
-});
+$router->get('/analytics/topsofthetops', [
+    'middleware' => 'auth',
+    'uses'       => 'GetTopOfTops\GetTopOfTopsController@getTopOfTops',
+]);
