@@ -7,12 +7,12 @@ use App\Repositories\DataBaseRepository;
 use App\Repositories\TwitchApiRepository;
 use Illuminate\Http\JsonResponse;
 
-readonly class GetTopOfTopsService
+class GetTopOfTopsService
 {
     public function __construct(
-        private DataBaseRepository $dataBaseRepository,
-        private TokenManager $tokenManager,
-        private TwitchApiRepository $twitchApiRepository
+        private readonly DataBaseRepository $dataBaseRepository,
+        private readonly TokenManager $tokenManager,
+        private readonly TwitchApiRepository $twitchApiRepository
     ) {
     }
     public function getTopOfTops(?string $since): JsonResponse
