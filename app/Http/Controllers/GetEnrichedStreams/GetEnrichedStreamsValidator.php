@@ -6,7 +6,7 @@ use App\Exceptions\InvalidLimitException;
 
 class GetEnrichedStreamsValidator
 {
-    public function validateStream(?string $limit): string
+    public function validateLimit(?string $limit): string
     {
         if (!isset($limit) || !is_numeric($limit)) {
             throw new InvalidLimitException();
