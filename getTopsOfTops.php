@@ -1,6 +1,8 @@
 <?php
 
-function getTopOfTops($since): void
+use Illuminate\Http\JsonResponse;
+
+function getTopOfTops($since): JsonResponse
 {
     require_once __DIR__ . '/src/funcionesAuxiliares/conectarBBDD.php';
     require_once __DIR__ . '/src/funcionesAuxiliares/conseguirToken.php';
@@ -8,22 +10,48 @@ function getTopOfTops($since): void
     require_once __DIR__ . '/src/funcionesAuxiliares/comprobarAuthorization.php';
     require_once __DIR__ . '/src/funcionesAuxiliares/manejarSSLVerifyer.php';
 
-    if (!validarPeticion($since)) {
-        return;
+    comprobarAuthorization();
+
+    $authHeader = $_SERVER['HTTP_AUTHORIZATION'];
+    $token      = str_replace('Bearer ', '', $authHeader);
+
+    if (!comprobarExpiracion($token)) {
+        return new JsonResponse([
+            'error' => 'Unauthorized. Token is invalid or has expired.',
+        ], 401);
+    }
+
+    if (!filter_var($since, FILTER_VALIDATE_INT)) {
+        return new JsonResponse([
+            'error' => 'Bad Request. Invalid or missing parameters.',
+        ], 400);
     }
 
     $token   = conseguirToken();
     $headers = getHeaders($token);
+    $api_url = 'https://api.twitch.tv/helix/games/top?first=3';
 
-    list($res, $response) = manejarSSLVerifyer('https://api.twitch.tv/helix/games/top?first=3', $headers);
+    $ch = curl_init($api_url);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-    match ($res) {
-        200     => manejarExito($response, $since, $headers),
-        401     => responderError(401, 'Unauthorized. Twitch access token is invalid or has expired.'),
-        404     => responderError(404, 'Not Found. No data available.'),
-        500     => responderError(500, 'Internal Server error.'),
-        default => responderError(500, 'Unexpected error.'),
-    };
+    $response = curl_exec($ch);
+    $res      = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    switch ($res) {
+        case 200:
+            manejarExito($response, $since, $headers);
+            // no break
+        case 401:
+            return responderError(401, 'Unauthorized. Twitch access token is invalid or has expired.');
+        case 404:
+            return responderError(404, 'Not Found. No data available.');
+        case 500:
+            return responderError(500, 'Internal Server error.');
+        default:
+            return responderError(500, 'Unexpected error.');
+    }
 }
 
 function validarPeticion($since): bool
@@ -109,11 +137,6 @@ function obtenerVideosJuego(string $game_id, array $headers): array
     $ch = curl_init($api_url);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-    if ($_SERVER['SERVER_NAME'] == 'localhost') {
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-    }
 
     $response = curl_exec($ch);
     curl_close($ch);
@@ -215,8 +238,9 @@ function responderJson(int $code, array $data): void
     echo json_encode($data, JSON_PRETTY_PRINT);
 }
 
-function responderError(int $code, string $message): void
+function responderError(int $code, string $message): JsonResponse
 {
-    http_response_code($code);
-    echo json_encode(['error' => $message], JSON_PRETTY_PRINT);
+    return new JsonResponse([
+        'error' => $message,
+    ], $code);
 }

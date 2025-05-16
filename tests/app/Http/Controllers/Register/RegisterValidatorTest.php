@@ -2,6 +2,7 @@
 
 namespace TwitchAnalytics\Tests\app\Http\Controllers\Register;
 
+
 use App\Exceptions\EmptyEmailParameterException;
 use App\Exceptions\InvalidArgumentException;
 use App\Http\Controllers\Register\RegisterValidator;
@@ -28,6 +29,7 @@ class RegisterValidatorTest extends TestCase
     public function testGivenEmptyEmailReturnsErrorMessage(): void
     {
         $validator = new RegisterValidator();
+
 
         $this->expectException(EmptyEmailParameterException::class);
 
