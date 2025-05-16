@@ -47,9 +47,8 @@ class GetUserByIdService
                 ], 404);
             }
             $this->dataBaseRepository->insertUserInDataBase($user);
-
-            return new JsonResponse($user->getInfo(), 200);
         }
+
         return new JsonResponse($user->getInfo(), 200);
     }
 }

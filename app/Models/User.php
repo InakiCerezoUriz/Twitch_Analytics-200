@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Http\JsonResponse;
-
 class User
 {
     private string $id;
