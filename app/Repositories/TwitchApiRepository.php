@@ -2,6 +2,8 @@
 
 namespace App\Repositories;
 
+use App\Models\User;
+
 class TwitchApiRepository
 {
     public function getUserFromTwitchApi(string $id, string $token): array
@@ -23,7 +25,16 @@ class TwitchApiRepository
 
         curl_close($ch);
 
-        return [$response, $res];
+        $dataArray = json_decode($response, true);
+
+        if (empty($dataArray['data'])) {
+            return [[], $res];
+        }
+        $user = new User(
+            $dataArray['data'][0]
+        );
+
+        return [$user, $res];
     }
 
     public function getApiTokenFromApi(): bool|string

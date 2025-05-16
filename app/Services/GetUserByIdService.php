@@ -24,35 +24,32 @@ class GetUserByIdService
     }
     public function getUser(string $id): JsonResponse
     {
-        $result = $this->dataBaseRepository->getUserFromDataBase($id);
+        $user = $this->dataBaseRepository->getUserFromDataBase($id);
 
         $token = $this->tokenManager->getToken();
+        if ($user == null) {
+            list($user, $httpCode) = $this->twitchApiRepository->getUserFromTwitchApi($id, $token);
 
-        if (empty($result)) {
-            list($response, $httpCode) = $this->twitchApiRepository->getUserFromTwitchApi($id, $token);
-
-            $data = json_decode($response, true);
-            switch ($httpCode) {
-                case 200:
-                    if (empty($data['data'])) {
-                        return new JsonResponse([
-                            'error' => 'User not found.',
-                        ], 404);
-                    } else {
-                        $this->dataBaseRepository->insertUserInDataBase($data['data'][0]);
-                        return new JsonResponse($data['data'][0], 200);
-                    }
-                    // no break
-                case 401:
-                    return new JsonResponse([
-                        'error' => 'Unauthorized. Twitch access token is invalid or has expired.',
-                    ], 401);
-                case 500:
-                    return new JsonResponse([
-                        'error' => 'Internal Server error.',
-                    ], 500);
+            if ($httpCode == 401) {
+                return new JsonResponse([
+                    'error' => 'Unauthorized. Twitch access token is invalid or has expired.',
+                ], 401);
             }
+            if ($httpCode == 500) {
+                return new JsonResponse([
+                    'error' => 'Internal Server error.',
+                ], 500);
+            }
+
+            if ($httpCode == 200 && empty($user)) {
+                return new JsonResponse([
+                    'error' => 'User not found.',
+                ], 404);
+            }
+            $this->dataBaseRepository->insertUserInDataBase($user);
+
+            return new JsonResponse($user->getInfo(), 200);
         }
-        return new JsonResponse($result, 200);
+        return new JsonResponse($user->getInfo(), 200);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Models\User;
 use PDO;
 
 class DataBaseRepository
@@ -62,7 +63,7 @@ class DataBaseRepository
         $stmt->execute();
     }
 
-    public function getUserFromDataBase(string $id): ?array
+    public function getUserFromDataBase(string $id): ?User
     {
         $pdo = $this->getConnection();
 
@@ -71,10 +72,14 @@ class DataBaseRepository
         $sql->execute();
         $result = $sql->fetch(PDO::FETCH_ASSOC);
 
-        return $result ?: null;
+        if ($result === false) {
+            return null;
+        }
+
+        return new User($result);
     }
 
-    public function insertUserInDataBase($data): void
+    public function insertUserInDataBase($user): void
     {
         $pdo = $this->getConnection();
 
@@ -87,6 +92,8 @@ class DataBaseRepository
                                         :profile_image_url, :offline_image_url, :view_count, :created_at
                                     )'
         );
+        $data = $user->getInfo();
+
         $stmt->bindParam(':id', $data['id']);
         $stmt->bindParam(':login', $data['login']);
         $stmt->bindParam(':display_name', $data['display_name']);
