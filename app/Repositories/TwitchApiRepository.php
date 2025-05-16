@@ -2,10 +2,15 @@
 
 namespace App\Repositories;
 
-use App\Models\User;
-
 class TwitchApiRepository
 {
+    private string $clientId;
+
+    public function __construct()
+    {
+        $this->clientId = env('TWITCH_CLIENT_ID');
+    }
+
     public function getUserFromTwitchApi(string $id, string $token): array
     {
         $api_url = 'https://api.twitch.tv/helix/users?id=' . $id;
@@ -58,7 +63,8 @@ class TwitchApiRepository
 
         return $response;
     }
-    public function getStreamsFromTwitchApi(string $token): array
+
+  public function getStreamsFromTwitchApi(string $token): array
     {
         $api_url = 'https://api.twitch.tv/helix/streams';
 
@@ -78,21 +84,39 @@ class TwitchApiRepository
 
         return [$response, $res];
     }
+
     public function getUserData(string $userId, string $token): array
     {
-        $headers = [
-            "Authorization: Bearer $token",  // Token
-            'Client-Id: pdp08hcdlqz3u2l18wz5eeu6kyll93',  // Client ID de la aplicación de twitch
+        $api_url = 'https://api.twitch.tv/helix/users?id=' . $userId;
+        $result  = $this->fetchFromTwitch($api_url, $this->getHeaders($token));
+        return $result[0] ?? [];
+    }
+
+    public function getTopGames(int $limit, string $token): array
+    {
+        $url = "https://api.twitch.tv/helix/games/top?first=$limit";
+        return $this->fetchFromTwitch($url, $this->getHeaders($token));
+    }
+
+    private function getHeaders(string $token): array
+    {
+        return [
+            "Authorization: Bearer $token",
+            "Client-Id: {$this->clientId}",
             'Content-Type: application/json',
         ];
-        $url = 'https://api.twitch.tv/helix/users?id=' . $userId;
-        $ch  = curl_init($url);
+    }
+
+    private function fetchFromTwitch(string $url, array $headers): ?array
+    {
+        $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $response = curl_exec($ch);
+        $httpCode = curl_exec($ch), CURLINFO_HTTP_CODE);
+      
         curl_close($ch);
-
-        $data = json_decode($response, true);
-        return $data['data'][0] ?? [];
+      
+        return [$response, $httoCode];
     }
 }
