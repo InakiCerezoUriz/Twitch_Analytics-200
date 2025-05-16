@@ -22,7 +22,7 @@ class GetStreamsController extends BaseController
         require_once __DIR__ . '/../../../../src/funcionesAuxiliares/comprobarExpiracion.php';
         require_once __DIR__ . '/../../../../src/funcionesAuxiliares/comprobarAuthorization.php';
 
-        comprobarAuthorization();
+        //comprobarAuthorization();
 
         $authHeader = $request->header('Authorization');
         $token      = str_replace('Bearer ', '', $authHeader);

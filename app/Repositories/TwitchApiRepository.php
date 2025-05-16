@@ -22,7 +22,7 @@ class TwitchApiRepository
     public function getStreamsFromTwitchApi(): array
     {
         $api_url = 'https://api.twitch.tv/helix/streams';
-        $token = conseguirToken();
+        $token   = conseguirToken();
 
         $headers = [
             "Authorization: Bearer $token",  // Token

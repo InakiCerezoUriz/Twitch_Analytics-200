@@ -2,7 +2,6 @@
 
 namespace TwitchAnalytics\Tests\app\Http\Controllers\GetUserById;
 
-use App\Http\Controllers\GetUserById\GetUserByIdValidator;
 use App\Services\GetUserByIdService;
 use Illuminate\Http\JsonResponse;
 use TwitchAnalytics\Tests\TestCase;
