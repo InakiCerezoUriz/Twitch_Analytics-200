@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\App\Services;
+namespace TwitchAnalytics\Tests\app\Services;
 
 use App\Infrastructure\TokenManager;
 use App\Interfaces\DataBaseRepositoryInterface;
