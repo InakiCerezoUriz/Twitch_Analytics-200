@@ -53,7 +53,7 @@ class GetStreamsControllerTest extends TestCase
         $response->assertStatus(200);
         $response->assertJson([
             'title',
-            'user_name'
+            'user_name',
         ]);
     }
 }
