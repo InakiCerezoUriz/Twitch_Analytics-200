@@ -22,16 +22,6 @@ class GetStreamsController extends BaseController
         require_once __DIR__ . '/../../../../src/funcionesAuxiliares/comprobarExpiracion.php';
         require_once __DIR__ . '/../../../../src/funcionesAuxiliares/comprobarAuthorization.php';
 
-        //comprobarAuthorization();
-
-        $authHeader = $request->header('Authorization');
-        $token      = str_replace('Bearer ', '', $authHeader);
-
-        if (!comprobarExpiracion($token)) {
-            return new JsonResponse([
-                'error' => 'Unauthorized. Token is invalid or expired.',
-            ], 401);
-        }
         return $this->getStreamsService->getStreams();
     }
 }

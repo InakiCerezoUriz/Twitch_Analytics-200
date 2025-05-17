@@ -24,7 +24,9 @@ $router->get('/analytics/user', [
     'uses'       => 'GetUserById\GetUserByIdController@getUser',
 ]);
 
-$router->get('/analytics/streams', 'GetStreams\GetStreamsController@getStreams');
+$router->get('/analytics/streams', [
+    'middleware' => 'auth',
+    'uses'       => 'GetStreams\GetStreamsController@getStreams']);
 
 $router->get('/analytics/streams/enriched', [
     'middleware' => 'auth',
