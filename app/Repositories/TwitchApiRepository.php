@@ -2,15 +2,10 @@
 
 namespace App\Repositories;
 
+use App\Models\EnrichedStream;
+
 class TwitchApiRepository
 {
-    private string $clientId;
-
-    public function __construct()
-    {
-        $this->clientId = env('TWITCH_CLIENT_ID');
-    }
-
     public function getUserFromTwitchApi(string $id, string $token): array
     {
         $api_url = 'https://api.twitch.tv/helix/users?id=' . $id;
@@ -23,6 +18,42 @@ class TwitchApiRepository
         $api_url = 'https://api.twitch.tv/helix/streams';
 
         return $this->fetchFromTwitch($api_url, $this->getHeaders($token));
+    }
+
+    public function getEnrichedStreamsFromTwitchApi(string $token, string $limit): array
+    {
+        $api_url = 'https://api.twitch.tv/helix/streams';
+
+        [$result, $httpCode] = $this->fetchFromTwitch($api_url, $this->getHeaders($token));
+
+        if ($httpCode != 200) {
+            return [$result, $httpCode];
+        }
+
+        $result = json_decode($result, true);
+
+        $result['data'] = array_slice($result['data'], 0, $limit);
+
+        $enrichedStreams = [];
+        foreach ($result['data'] as $stream) {
+            $enrichedStream = new EnrichedStream();
+
+            $enrichedStream->setStreamInfo($stream);
+
+            $user_id = $stream['user_id'];
+
+            [$result, $httpCode] = $this->getUserFromTwitchApi($user_id, $token);
+
+            if ($httpCode != 200) {
+                return [$result, $httpCode];
+            }
+            $user_data = json_decode($result, true);
+            $enrichedStream->setUserInfo($user_data['data'][0]);
+
+            $enrichedStreams[] = $enrichedStream->getEnrichedStream();
+        }
+
+        return [$enrichedStreams, 200];
     }
 
     public function getApiTokenFromApi(): bool|string
@@ -45,13 +76,6 @@ class TwitchApiRepository
         return $response;
     }
 
-    public function getUserData(string $userId, string $token): array
-    {
-        $api_url = 'https://api.twitch.tv/helix/users?id=' . $userId;
-        $result  = $this->fetchFromTwitch($api_url, $this->getHeaders($token));
-        return $result[0] ?? [];
-    }
-
     public function getTopGames(int $limit, string $token): array
     {
         $url = "https://api.twitch.tv/helix/games/top?first=$limit";
@@ -62,7 +86,7 @@ class TwitchApiRepository
     {
         return [
             "Authorization: Bearer $token",
-            "Client-Id: {$this->clientId}",
+            'Client-Id: pdp08hcdlqz3u2l18wz5eeu6kyll93',
             'Content-Type: application/json',
         ];
     }
