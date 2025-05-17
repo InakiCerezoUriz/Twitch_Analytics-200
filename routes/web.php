@@ -24,11 +24,9 @@ $router->get('/analytics/user', [
     'uses'       => 'GetUserById\GetUserByIdController@getUser',
 ]);
 
-
-$router->get('/analytics/streams', function () {
-    require_once __DIR__ . '/../getStreams.php';
-    getStreams();
-});
+$router->get('/analytics/streams', [
+    'middleware' => 'auth',
+    'uses'       => 'GetStreams\GetStreamsController@getStreams']);
 
 $router->get('/analytics/streams/enriched', [
     'middleware' => 'auth',
