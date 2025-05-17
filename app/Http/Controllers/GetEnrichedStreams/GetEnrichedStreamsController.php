@@ -26,7 +26,7 @@ class GetEnrichedStreamsController extends BaseController
     public function getEnriched(Request $request): JsonResponse
     {
         try {
-            $limit = $this->validatorStreams->validateStream($request->get('limit'));
+            $limit = $this->validatorStreams->validateLimit($request->get('limit'));
 
             return $this->getEnrichedStreamsService->getEnriched($limit);
         } catch (InvalidLimitException $exception) {
