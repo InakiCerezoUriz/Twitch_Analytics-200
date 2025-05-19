@@ -2,10 +2,10 @@
 
 namespace App\Repositories;
 
+use App\Interfaces\TwitchApiRepositoryInterface;
 use App\Models\EnrichedStream;
-use App\Models\Stream;
 
-class TwitchApiRepository
+class TwitchApiRepository implements TwitchApiRepositoryInterface
 {
     public function getUserFromTwitchApi(string $id, string $token): array
     {

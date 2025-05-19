@@ -43,6 +43,11 @@ $app->bind(
     App\Repositories\DataBaseRepository::class
 );
 
+$app->bind(
+    App\Interfaces\TwitchApiRepositoryInterface::class,
+    App\Repositories\TwitchApiRepository::class
+);
+
 /*
 |--------------------------------------------------------------------------
 | Register Config Files
