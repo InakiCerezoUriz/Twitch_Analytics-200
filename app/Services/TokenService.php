@@ -8,7 +8,6 @@ use Illuminate\Http\JsonResponse;
 
 class TokenService
 {
-
     public function __construct(
         private readonly DataBaseRepositoryInterface $dataBaseRepository,
         private readonly TokenManager $tokenManager

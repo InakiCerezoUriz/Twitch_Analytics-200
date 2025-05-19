@@ -3,13 +3,13 @@
 namespace App\Services;
 
 use App\Infrastructure\TokenManager;
-use App\Repositories\TwitchApiRepository;
+use App\Interfaces\TwitchApiRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 
 class GetStreamsService
 {
     public function __construct(
-        private readonly TwitchApiRepository $twitchApiRepository,
+        private readonly TwitchApiRepositoryInterface $twitchApiRepository,
         private readonly TokenManager $tokenManager
     ) {
     }
