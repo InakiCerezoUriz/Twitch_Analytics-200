@@ -9,11 +9,9 @@ use Laravel\Lumen\Routing\Controller as BaseController;
 
 class GetStreamsController extends BaseController
 {
-    private GetStreamsService $getStreamsService;
     public function __construct(
-        GetStreamsService $getStreamsService
+        private readonly GetStreamsService $getStreamsService
     ) {
-        $this->getStreamsService = $getStreamsService;
     }
     public function getStreams(Request $request): JsonResponse
     {
