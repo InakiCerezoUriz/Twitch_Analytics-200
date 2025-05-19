@@ -51,3 +51,4 @@ class TokenManager
         return ($fechaExpiracion > time());
     }
 }
+
