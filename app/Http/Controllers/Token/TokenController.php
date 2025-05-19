@@ -12,7 +12,6 @@ use Laravel\Lumen\Routing\Controller as BaseController;
 
 class TokenController extends BaseController
 {
-
     public function __construct(
         private readonly TokenValidator $validator,
         private readonly TokenService $TokenService

@@ -4,7 +4,6 @@ namespace App\Repositories;
 
 use App\Interfaces\TwitchApiRepositoryInterface;
 use App\Models\EnrichedStream;
-use App\Models\Stream;
 
 class TwitchApiRepository implements TwitchApiRepositoryInterface
 {
