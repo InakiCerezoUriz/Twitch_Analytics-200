@@ -30,6 +30,8 @@ interface DataBaseRepositoryInterface
 
     public function getTops(): array;
 
+    public function insertTopsInDataBase(array $game): void;
+
     public function obtenerInformacionJuego(string $game_name, string $user_name): array;
 
     public function clearCache(): void;

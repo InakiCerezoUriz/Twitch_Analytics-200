@@ -89,9 +89,9 @@ class TwitchApiRepository
         return $response;
     }
 
-    public function getTopGames(int $limit, string $token): array
+    public function getTopGames(string $token): array
     {
-        $url = "https://api.twitch.tv/helix/games/top?first=$limit";
+        $url = 'https://api.twitch.tv/helix/games/top?first=3';
         return $this->fetchFromTwitch($url, $this->getHeaders($token));
     }
 

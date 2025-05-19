@@ -201,6 +201,17 @@ class DataBaseRepository implements DataBaseRepositoryInterface
     }
 
 
+    public function insertTopsInDataBase(array $game): void
+    {
+        $pdo = $this->getConnection();
+
+        $stmt = $pdo->prepare('INSERT INTO CACHE (GAME_NAME, USER_NAME) VALUES (:game_name, :user_name)');
+
+        $stmt->bindValue(':game_name', $game['name']);
+        $stmt->bindValue(':user_name', $game['username']);
+        $stmt->execute();
+    }
+
     private function getConnection(): PDO
     {
         if ($this->db === null) {
