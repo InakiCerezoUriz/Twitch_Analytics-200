@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\EnrichedStream;
+use App\Models\Stream;
 
 class TwitchApiRepository
 {
@@ -17,7 +18,19 @@ class TwitchApiRepository
     {
         $api_url = 'https://api.twitch.tv/helix/streams';
 
-        return $this->fetchFromTwitch($api_url, $this->getHeaders($token));
+        $streams               = [];
+        [$response, $httpCode] = $this->fetchFromTwitch($api_url, $this->getHeaders($token));
+
+        if ($httpCode != 200) {
+            return [$response, $httpCode];
+        }
+
+        $data = json_decode($response, true);
+        foreach ($data['data'] as $streamData) {
+            $streams[] = new Stream($streamData['title'], $streamData['user_name']);
+        }
+
+        return [$streams, 200];
     }
 
     public function getEnrichedStreamsFromTwitchApi(string $token, string $limit): array

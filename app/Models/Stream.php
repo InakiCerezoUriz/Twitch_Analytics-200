@@ -16,8 +16,8 @@ class Stream
     public function getStream(): array
     {
         return [
-            'title'             => $this->title,
-            'user_name'         => $this->user_name
+            'title'     => $this->title,
+            'user_name' => $this->user_name,
         ];
     }
 }
