@@ -3,13 +3,13 @@
 namespace App\Infrastructure;
 
 use App\Interfaces\DataBaseRepositoryInterface;
-use App\Repositories\TwitchApiRepository;
+use App\Interfaces\TwitchApiRepositoryInterface;
 
 class TokenManager
 {
     public function __construct(
         private readonly DataBaseRepositoryInterface $dataBaseRepository,
-        private readonly TwitchApiRepository $twitchApiRepository
+        private readonly TwitchApiRepositoryInterface $twitchApiRepository
     ) {
     }
 

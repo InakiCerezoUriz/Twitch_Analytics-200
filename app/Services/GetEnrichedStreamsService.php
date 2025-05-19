@@ -3,20 +3,15 @@
 namespace App\Services;
 
 use App\Infrastructure\TokenManager;
-use App\Repositories\TwitchApiRepository;
+use App\Interfaces\TwitchApiRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 
 class GetEnrichedStreamsService
 {
-    private TwitchApiRepository $twitchApiRepository;
-    private TokenManager $tokenManager;
-
     public function __construct(
-        TwitchApiRepository $twitchApiRepository,
-        TokenManager $tokenManager
+        private readonly TwitchApiRepositoryInterface $twitchApiRepository,
+        private readonly TokenManager $tokenManager
     ) {
-        $this->twitchApiRepository = $twitchApiRepository;
-        $this->tokenManager        = $tokenManager;
     }
 
     public function getEnriched(string $limit): JsonResponse

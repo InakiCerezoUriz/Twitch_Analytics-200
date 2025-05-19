@@ -6,8 +6,9 @@ use App\Exceptions\EmptyOrInvalidSinceException;
 use App\Services\GetTopOfTopsService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Laravel\Lumen\Routing\Controller as BaseController;
 
-class GetTopOfTopsController
+class GetTopOfTopsController extends BaseController
 {
     public function __construct(
         private readonly GetTopOfTopsValidator $validatorSince,
