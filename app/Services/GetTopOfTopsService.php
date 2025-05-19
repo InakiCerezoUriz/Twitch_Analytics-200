@@ -22,6 +22,7 @@ class GetTopOfTopsService
         $token = $this->tokenManager->getToken();
 
         $topGames = $this->twitchApiRepository->getTopGames($token);
+
         $topGames = json_decode($topGames[0], true)['data'] ?? [];
 
         if (empty($topGames)) {
@@ -32,22 +33,18 @@ class GetTopOfTopsService
 
         $ultimaSolicitud = $this->dataBaseRepository->getUltimaSolicitud();
 
-        $final = [];
+        if ((time() - $ultimaSolicitud) > $since) {
+            $this->dataBaseRepository->clearCache();
 
-        //        if ((time() - $ultimaSolicitud) < $since) {
-        //            foreach ($topGames as $game) {
-        //                $final[] = $this->dataBaseRepository->obtenerInformacionJuego($game['game_name']);
-        //            }
-        //            return new JsonResponse($final, 200);
-        //        }
+            foreach ($topGames as $game) {
+                $topStreamer = $this->twitchApiRepository->getTopStreamer($game, $token);
 
-        $this->dataBaseRepository->clearCache();
-
-        foreach ($topGames as $game) {
-            $this->dataBaseRepository->insertTopsInDataBase($game);
-            $final[] = $this->dataBaseRepository->obtenerInformacionJuego($game['game_name'], $game['user_name']);
+                $this->dataBaseRepository->insertarTopStreamer($topStreamer);
+            }
         }
 
-        return new JsonResponse($final, 200);
+        $topStreamers = $this->dataBaseRepository->getTopStreamer();
+
+        return new JsonResponse($topStreamers, 200);
     }
 }

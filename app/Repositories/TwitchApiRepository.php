@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\EnrichedStream;
 use App\Models\Stream;
+use App\Models\TopStreamer;
 
 class TwitchApiRepository
 {
@@ -93,6 +94,19 @@ class TwitchApiRepository
     {
         $url = 'https://api.twitch.tv/helix/games/top?first=3';
         return $this->fetchFromTwitch($url, $this->getHeaders($token));
+    }
+
+    public function getTopStreamer(array $game, string $token): TopStreamer
+    {
+        $url = 'https://api.twitch.tv/helix/videos?game_id=' . $game['id'] . '&first=40&sort=views';
+
+        $streams = $this->fetchFromTwitch($url, $this->getHeaders($token));
+        $streams = json_decode($streams[0], true)['data'];
+
+        $topStreamerStreams = array_filter($streams, fn ($stream) => $stream['user_name'] === $streams[0]['user_name']);
+        $totalViews         = array_sum(array_column($topStreamerStreams, 'view_count'));
+
+        return new TopStreamer($game, $streams[0], count($topStreamerStreams), $totalViews);
     }
 
     private function getHeaders(string $token): array
