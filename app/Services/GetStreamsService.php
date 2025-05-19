@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Infrastructure\TokenManager;
-use App\Models\Stream;
 use App\Repositories\TwitchApiRepository;
 use Illuminate\Http\JsonResponse;
 

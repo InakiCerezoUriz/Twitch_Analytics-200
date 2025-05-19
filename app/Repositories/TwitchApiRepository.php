@@ -18,7 +18,7 @@ class TwitchApiRepository
     {
         $api_url = 'https://api.twitch.tv/helix/streams';
 
-        $streams = [];
+        $streams               = [];
         [$response, $httpCode] = $this->fetchFromTwitch($api_url, $this->getHeaders($token));
 
         if ($httpCode != 200) {
