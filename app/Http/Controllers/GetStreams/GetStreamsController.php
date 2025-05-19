@@ -17,11 +17,6 @@ class GetStreamsController extends BaseController
     }
     public function getStreams(Request $request): JsonResponse
     {
-        require_once __DIR__ . '/../../../../src/funcionesAuxiliares/conseguirToken.php';
-        require_once __DIR__ . '/../../../../src/funcionesAuxiliares/iniciarCurl.php';
-        require_once __DIR__ . '/../../../../src/funcionesAuxiliares/comprobarExpiracion.php';
-        require_once __DIR__ . '/../../../../src/funcionesAuxiliares/comprobarAuthorization.php';
-
         return $this->getStreamsService->getStreams();
     }
 }
