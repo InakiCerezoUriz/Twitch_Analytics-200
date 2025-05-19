@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Infrastructure\TokenManager;
-use App\Models\Stream;
 use App\Repositories\TwitchApiRepository;
 use Illuminate\Http\JsonResponse;
 
@@ -18,15 +17,19 @@ class GetStreamsService
     {
         $token = $this->tokenManager->getToken();
 
-        [$response, $httpCode] = $this->twitchApiRepository->getStreamsFromTwitchApi($token);
+        [$response, $res] = $this->twitchApiRepository->getStreamsFromTwitchApi($token);
 
-        switch ($httpCode) {
+        switch ($res) {
             case 200:
                 $data  = json_decode($response, true);
                 $lista = [];
                 for ($i = 0; $i < count($data['data']); $i++) {
-                    $stream = new Stream($data['data'][$i]['title'], $data['data'][$i]['user_name']);
-                    $lista[$i] = $stream->getStream();
+                    $title     = $data['data'][$i]['title'];
+                    $user_name = $data['data'][$i]['user_name'];
+                    $lista[$i] = [
+                        'title'     => $title,
+                        'user_name' => $user_name,
+                    ];
                 }
 
                 return new JsonResponse($lista, 200);
