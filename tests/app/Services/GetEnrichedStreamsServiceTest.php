@@ -6,17 +6,30 @@ use App\Infrastructure\TokenManager;
 use App\Repositories\TwitchApiRepository;
 use App\Services\GetEnrichedStreamsService;
 use Illuminate\Http\JsonResponse;
-use TwitchAnalytics\Tests\TestCase;
+use Laravel\Lumen\Testing\TestCase;
 
 class GetEnrichedStreamsServiceTest extends TestCase
 {
     private $twitchApiRepository;
     private $tokenManager;
+    private GetEnrichedStreamsService $service;
+
+    public function createApplication()
+    {
+        return require __DIR__ . '/../../../bootstrap/app.php';
+    }
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         $this->twitchApiRepository = $this->createMock(TwitchApiRepository::class);
         $this->tokenManager        = $this->createMock(TokenManager::class);
+
+        $this->app->instance(TwitchApiRepository::class, $this->twitchApiRepository);
+        $this->app->instance(TokenManager::class, $this->tokenManager);
+
+        $this->service = $this->app->make(GetEnrichedStreamsService::class);
     }
 
     /**
@@ -29,9 +42,7 @@ class GetEnrichedStreamsServiceTest extends TestCase
             ->with('not_valid_token', '3')
             ->willReturn([[], 401]);
 
-        $service = new GetEnrichedStreamsService($this->twitchApiRepository, $this->tokenManager);
-
-        $response = $service->getEnriched('3');
+        $response = $this->service->getEnriched('3');
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(401, $response->getStatusCode());
@@ -52,9 +63,7 @@ class GetEnrichedStreamsServiceTest extends TestCase
             ->with('valid_token', '3')
             ->willReturn([[], 500]);
 
-        $service = new GetEnrichedStreamsService($this->twitchApiRepository, $this->tokenManager);
-
-        $response = $service->getEnriched('3');
+        $response = $this->service->getEnriched('3');
 
         $this->assertEquals(500, $response->getStatusCode());
         $this->assertEquals([
@@ -80,9 +89,7 @@ class GetEnrichedStreamsServiceTest extends TestCase
             ->with('valid_token', '3')
             ->willReturn([$expectedData, 200]);
 
-        $service = new GetEnrichedStreamsService($this->twitchApiRepository, $this->tokenManager);
-
-        $response = $service->getEnriched('3');
+        $response = $this->service->getEnriched('3');
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals($expectedData, $response->getData(true));
