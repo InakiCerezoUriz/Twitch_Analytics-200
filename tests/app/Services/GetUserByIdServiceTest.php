@@ -6,9 +6,8 @@ use App\Infrastructure\TokenManager;
 use App\Repositories\DataBaseRepository;
 use App\Repositories\TwitchApiRepository;
 use App\Services\GetUserByIdService;
-use Illuminate\Http\JsonResponse;
+use Laravel\Lumen\Testing\TestCase;
 use PHPUnit\Framework\MockObject\Exception;
-use PHPUnit\Framework\TestCase;
 
 class GetUserByIdServiceTest extends TestCase
 {
@@ -17,6 +16,11 @@ class GetUserByIdServiceTest extends TestCase
     private $tokenManager;
 
     protected GetUserByIdService $service;
+
+    public function createApplication()
+    {
+        return require __DIR__ . '/../../../bootstrap/app.php';
+    }
 
     /**
      * @throws Exception
@@ -29,11 +33,11 @@ class GetUserByIdServiceTest extends TestCase
         $this->twitchApiRepository = $this->createMock(TwitchApiRepository::class);
         $this->tokenManager = $this->createMock(TokenManager::class);
 
-        $this->service = new GetUserByIdService(
-            $this->dataBaseRepository,
-            $this->twitchApiRepository,
-            $this->tokenManager
-        );
+        $this->app->instance(DataBaseRepository::class, $this->dataBaseRepository);
+        $this->app->instance(TwitchApiRepository::class, $this->twitchApiRepository);
+        $this->app->instance(TokenManager::class, $this->tokenManager);
+
+        $this->service = $this->app->make(GetUserByIdService::class);
     }
 
     /**
