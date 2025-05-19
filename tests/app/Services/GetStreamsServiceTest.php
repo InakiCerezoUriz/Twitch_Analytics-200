@@ -7,8 +7,8 @@ use App\Models\Stream;
 use App\Repositories\TwitchApiRepository;
 use App\Services\GetStreamsService;
 use Illuminate\Http\JsonResponse;
+use Laravel\Lumen\Testing\TestCase;
 use PHPUnit\Framework\MockObject\Exception;
-use TwitchAnalytics\Tests\TestCase;
 
 class GetStreamsServiceTest extends TestCase
 {
@@ -16,6 +16,10 @@ class GetStreamsServiceTest extends TestCase
     private $tokenManager;
     private GetStreamsService $service;
 
+    public function createApplication()
+    {
+        return require __DIR__ . '/../../../bootstrap/app.php';
+    }
     /**
      * @throws Exception
      */
@@ -26,10 +30,10 @@ class GetStreamsServiceTest extends TestCase
         $this->twitchApiRepository = $this->createMock(TwitchApiRepository::class);
         $this->tokenManager = $this->createMock(TokenManager::class);
 
-        $this->service = new GetStreamsService(
-            $this->twitchApiRepository,
-            $this->tokenManager
-        );
+        $this->app->instance(TwitchApiRepository::class, $this->twitchApiRepository);
+        $this->app->instance(TokenManager::class, $this->tokenManager);
+
+        $this->service = $this->app->make(GetStreamsService::class);
     }
 
     /**
