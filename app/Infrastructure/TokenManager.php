@@ -2,20 +2,15 @@
 
 namespace App\Infrastructure;
 
-use App\Repositories\DataBaseRepository;
+use App\Interfaces\DataBaseRepositoryInterface;
 use App\Repositories\TwitchApiRepository;
 
 class TokenManager
 {
-    private DataBaseRepository $dataBaseRepository;
-    private TwitchApiRepository $twitchApiRepository;
-
     public function __construct(
-        DataBaseRepository $dataBaseRepository,
-        TwitchApiRepository $twitchApiRepository
+        private readonly DataBaseRepositoryInterface $dataBaseRepository,
+        private readonly TwitchApiRepository $twitchApiRepository
     ) {
-        $this->dataBaseRepository  = $dataBaseRepository;
-        $this->twitchApiRepository = $twitchApiRepository;
     }
 
     public function generarToken(): array
@@ -56,3 +51,4 @@ class TokenManager
         return ($fechaExpiracion > time());
     }
 }
+

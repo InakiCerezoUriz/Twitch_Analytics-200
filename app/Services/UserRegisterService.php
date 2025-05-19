@@ -2,15 +2,14 @@
 
 namespace App\Services;
 
-use App\Repositories\DataBaseRepository;
+use App\Interfaces\DataBaseRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 
 class UserRegisterService
 {
     public function __construct(
-        private DataBaseRepository $dataBaseRepository
+        private readonly DataBaseRepositoryInterface $dataBaseRepository
     ) {
-        $this->dataBaseRepository = new DataBaseRepository();
     }
 
     public function register(string $email): JsonResponse

@@ -3,20 +3,16 @@
 namespace App\Services;
 
 use App\Infrastructure\TokenManager;
-use App\Repositories\DataBaseRepository;
+use App\Interfaces\DataBaseRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 
 class TokenService
 {
-    private DataBaseRepository $dataBaseRepository;
-    private TokenManager $tokenManager;
 
     public function __construct(
-        DataBaseRepository $dataBaseRepository,
-        TokenManager $tokenManager
+        private readonly DataBaseRepositoryInterface $dataBaseRepository,
+        private readonly TokenManager $tokenManager
     ) {
-        $this->dataBaseRepository = $dataBaseRepository;
-        $this->tokenManager       = $tokenManager;
     }
     public function getToken(string $email, string $api_key): JsonResponse
     {

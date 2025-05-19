@@ -3,14 +3,14 @@
 namespace App\Services;
 
 use App\Infrastructure\TokenManager;
-use App\Repositories\DataBaseRepository;
+use App\Interfaces\DataBaseRepositoryInterface;
 use App\Repositories\TwitchApiRepository;
 use Illuminate\Http\JsonResponse;
 
 class GetTopOfTopsService
 {
     public function __construct(
-        private readonly DataBaseRepository $dataBaseRepository,
+        private readonly DataBaseRepositoryInterface $dataBaseRepository,
         private readonly TokenManager $tokenManager,
         private readonly TwitchApiRepository $twitchApiRepository
     ) {

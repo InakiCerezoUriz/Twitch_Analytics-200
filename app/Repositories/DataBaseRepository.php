@@ -2,9 +2,10 @@
 
 namespace App\Repositories;
 
+use App\Interfaces\DataBaseRepositoryInterface;
 use PDO;
 
-class DataBaseRepository
+class DataBaseRepository implements DataBaseRepositoryInterface
 {
     private ?PDO $db = null;
 
@@ -192,7 +193,7 @@ class DataBaseRepository
         return $final;
     }
 
-    public function clearCache()
+    public function clearCache(): void
     {
         $pdo = $this->getConnection();
 

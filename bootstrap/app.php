@@ -39,22 +39,7 @@ $app->singleton(
 );
 
 $app->bind(
-    App\Http\Controllers\GetUserById\GetUserByIdValidator::class
-);
-
-$app->bind(
-    App\Services\GetUserByIdService::class
-);
-
-$app->bind(
-    App\Http\Controllers\Token\TokenValidator::class
-);
-
-$app->bind(
-    App\Services\TokenService::class
-);
-
-$app->bind(
+    App\Interfaces\DataBaseRepositoryInterface::class,
     App\Repositories\DataBaseRepository::class
 );
 
