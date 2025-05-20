@@ -1,17 +1,17 @@
 <?php
 
-namespace Tests\App\Services;
+namespace TwitchAnalytics\Tests\app\Services;
 
 use App\Infrastructure\TokenManager;
-use App\Repositories\TwitchApiRepository;
+use App\Interfaces\TwitchApiRepositoryInterface;
 use App\Services\GetEnrichedStreamsService;
 use Illuminate\Http\JsonResponse;
 use Laravel\Lumen\Testing\TestCase;
 
 class GetEnrichedStreamsServiceTest extends TestCase
 {
-    private $twitchApiRepository;
-    private $tokenManager;
+    private TwitchApiRepositoryInterface $twitchApiRepository;
+    private TokenManager $tokenManager;
     private GetEnrichedStreamsService $service;
 
     public function createApplication()
@@ -23,10 +23,10 @@ class GetEnrichedStreamsServiceTest extends TestCase
     {
         parent::setUp();
 
-        $this->twitchApiRepository = $this->createMock(TwitchApiRepository::class);
+        $this->twitchApiRepository = $this->createMock(TwitchApiRepositoryInterface::class);
         $this->tokenManager        = $this->createMock(TokenManager::class);
 
-        $this->app->instance(TwitchApiRepository::class, $this->twitchApiRepository);
+        $this->app->instance(TwitchApiRepositoryInterface::class, $this->twitchApiRepository);
         $this->app->instance(TokenManager::class, $this->tokenManager);
 
         $this->service = $this->app->make(GetEnrichedStreamsService::class);
