@@ -5,7 +5,6 @@ namespace TwitchAnalytics\Tests\app\Services;
 use App\Infrastructure\TokenManager;
 use App\Interfaces\DataBaseRepositoryInterface;
 use App\Services\TokenService;
-use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 
 class TokenServiceTest extends TestCase
@@ -14,10 +13,6 @@ class TokenServiceTest extends TestCase
     private TokenManager $tokenManager;
     private TokenService $service;
 
-
-    /**
-     * @throws Exception
-     */
     protected function setUp(): void
     {
         parent::setUp();
