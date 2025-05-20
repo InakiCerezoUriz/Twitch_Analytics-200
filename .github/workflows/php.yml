@@ -45,5 +45,5 @@ jobs:
 
       - name: Run Grump
         run: |
-          vendor/bin/grumphp run --verbose
+          composer grumphp
         shell: bash
