@@ -2,9 +2,12 @@
 
 namespace App\Repositories;
 
+use App\Interfaces\TwitchApiRepositoryInterface;
 use App\Models\EnrichedStream;
+use App\Models\Stream;
+use App\Models\TopStreamer;
 
-class TwitchApiRepository
+class TwitchApiRepository implements TwitchApiRepositoryInterface
 {
     public function getUserFromTwitchApi(string $id, string $token): array
     {
@@ -17,7 +20,19 @@ class TwitchApiRepository
     {
         $api_url = 'https://api.twitch.tv/helix/streams';
 
-        return $this->fetchFromTwitch($api_url, $this->getHeaders($token));
+        $streams               = [];
+        [$response, $httpCode] = $this->fetchFromTwitch($api_url, $this->getHeaders($token));
+
+        if ($httpCode != 200) {
+            return [$response, $httpCode];
+        }
+
+        $data = json_decode($response, true);
+        foreach ($data['data'] as $streamData) {
+            $streams[] = new Stream($streamData['title'], $streamData['user_name']);
+        }
+
+        return [$streams, 200];
     }
 
     public function getEnrichedStreamsFromTwitchApi(string $token, string $limit): array
@@ -76,10 +91,23 @@ class TwitchApiRepository
         return $response;
     }
 
-    public function getTopGames(int $limit, string $token): array
+    public function getTopGames(string $token): array
     {
-        $url = "https://api.twitch.tv/helix/games/top?first=$limit";
+        $url = 'https://api.twitch.tv/helix/games/top?first=3';
         return $this->fetchFromTwitch($url, $this->getHeaders($token));
+    }
+
+    public function getTopStreamer(array $game, string $token): TopStreamer
+    {
+        $url = 'https://api.twitch.tv/helix/videos?game_id=' . $game['id'] . '&first=40&sort=views';
+
+        $streams = $this->fetchFromTwitch($url, $this->getHeaders($token));
+        $streams = json_decode($streams[0], true)['data'];
+
+        $topStreamerStreams = array_filter($streams, fn ($stream) => $stream['user_name'] === $streams[0]['user_name']);
+        $totalViews         = array_sum(array_column($topStreamerStreams, 'view_count'));
+
+        return new TopStreamer($game, $streams[0], count($topStreamerStreams), $totalViews);
     }
 
     private function getHeaders(string $token): array

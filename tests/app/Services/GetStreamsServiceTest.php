@@ -1,20 +1,25 @@
 <?php
 
-namespace Tests\App\Services;
+namespace TwitchAnalytics\Tests\app\Services;
 
 use App\Infrastructure\TokenManager;
-use App\Repositories\TwitchApiRepository;
+use App\Interfaces\TwitchApiRepositoryInterface;
+use App\Models\Stream;
 use App\Services\GetStreamsService;
 use Illuminate\Http\JsonResponse;
+use Laravel\Lumen\Testing\TestCase;
 use PHPUnit\Framework\MockObject\Exception;
-use TwitchAnalytics\Tests\TestCase;
 
 class GetStreamsServiceTest extends TestCase
 {
-    private $twitchApiRepository;
-    private $tokenManager;
+    private TwitchApiRepositoryInterface $twitchApiRepository;
+    private TokenManager $tokenManager;
     private GetStreamsService $service;
 
+    public function createApplication()
+    {
+        return require __DIR__ . '/../../../bootstrap/app.php';
+    }
     /**
      * @throws Exception
      */
@@ -22,13 +27,13 @@ class GetStreamsServiceTest extends TestCase
     {
         parent::setUp();
 
-        $this->twitchApiRepository = $this->createMock(TwitchApiRepository::class);
-        $this->tokenManager = $this->createMock(TokenManager::class);
+        $this->twitchApiRepository = $this->createMock(TwitchApiRepositoryInterface::class);
+        $this->tokenManager        = $this->createMock(TokenManager::class);
 
-        $this->service = new GetStreamsService(
-            $this->twitchApiRepository,
-            $this->tokenManager
-        );
+        $this->app->instance(TwitchApiRepositoryInterface::class, $this->twitchApiRepository);
+        $this->app->instance(TokenManager::class, $this->tokenManager);
+
+        $this->service = $this->app->make(GetStreamsService::class);
     }
 
     /**
@@ -38,20 +43,17 @@ class GetStreamsServiceTest extends TestCase
     {
         $this->tokenManager->method('getToken')->willReturn('valid_token');
 
-        $mockApiResponse = json_encode([
-            'data' => [
-                ['title' => 'Stream 1', 'user_name' => 'User1'],
-                ['title' => 'Stream 2', 'user_name' => 'User2'],
-                ['title' => 'Stream 3', 'user_name' => 'User3'],
-            ]
-        ]);
+        $mockApiResponse = [
+            new Stream('Stream 1', 'User1'),
+            new Stream('Stream 2', 'User2'),
+            new Stream('Stream 3', 'User3'),
+        ];
 
         $this->twitchApiRepository->method('getStreamsFromTwitchApi')
             ->with('valid_token')
             ->willReturn([$mockApiResponse, 200]);
 
         $response = $this->service->getStreams();
-
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals([

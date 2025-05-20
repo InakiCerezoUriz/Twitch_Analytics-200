@@ -2,6 +2,8 @@
 
 namespace App\Interfaces;
 
+use App\Models\TopStreamer;
+
 interface DataBaseRepositoryInterface
 {
     public function getApiKey(string $email): ?string;
@@ -28,9 +30,9 @@ interface DataBaseRepositoryInterface
 
     public function getUltimaSolicitud(): int;
 
-    public function getTops(): array;
+    public function insertarTopStreamer(TopStreamer $topStreamer): void;
 
-    public function obtenerInformacionJuego(string $game_name, string $user_name): array;
+    public function getTopStreamer();
 
     public function clearCache(): void;
 

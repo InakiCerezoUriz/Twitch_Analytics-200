@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Interfaces\DataBaseRepositoryInterface;
+use App\Models\TopStreamer;
 use PDO;
 
 class DataBaseRepository implements DataBaseRepositoryInterface
@@ -154,43 +155,55 @@ class DataBaseRepository implements DataBaseRepositoryInterface
         return strtotime($result['ultima_solicitud'] ?? '0');
     }
 
-    public function getTops(): array
+    public function insertarTopStreamer(TopStreamer $topStreamer): void
     {
         $pdo = $this->getConnection();
 
-        return $pdo->query('SELECT GAME_NAME, USER_NAME FROM CACHE GROUP BY GAME_NAME, USER_NAME')->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    public function obtenerInformacionJuego(string $game_name, string $user_name): array
-    {
-        $pdo = $this->getConnection();
+        $topStreamer = $topStreamer->getTopStreamer();
 
         $stmt = $pdo->prepare(
-            'WITH MaxViews AS (
-                SELECT GAME_ID, GAME_NAME, USER_NAME, TITLE, VIEWS, DURATION, CREATED_AT,
-                       ROW_NUMBER() OVER (PARTITION BY GAME_ID, USER_NAME ORDER BY VIEWS DESC) AS row_num
-                FROM CACHE)
-            SELECT c.GAME_ID, c.GAME_NAME, c.USER_NAME, COUNT(*) AS TOTAL_VIDEOS, 
-                   SUM(c.VIEWS) AS TOTAL_VIEWS,
-                   mv.TITLE AS MOST_VIEWED_TITLE, mv.VIEWS AS MOST_VIEWED_VIEWS,
-                   mv.DURATION AS MOST_VIEWED_DURATION, mv.CREATED_AT AS MOST_VIEWED_CREATED_AT
-            FROM CACHE c
-            JOIN MaxViews mv ON c.GAME_ID = mv.GAME_ID AND c.USER_NAME = mv.USER_NAME AND mv.row_num = 1
-            WHERE c.GAME_NAME = :game_name AND c.USER_NAME = :user_name
-            GROUP BY c.GAME_ID, c.GAME_NAME, c.USER_NAME, mv.TITLE, mv.VIEWS, mv.DURATION, mv.CREATED_AT
-            ORDER BY TOTAL_VIEWS DESC'
+            'INSERT INTO CACHE (
+                GAME_ID, GAME_NAME, USER_NAME, TOTAL_VIDEOS, TOTAL_VIEWS,
+                TITLE, VIEWS, DURATION, CREATED_AT, ULTIMA_SOLICITUD
+            )
+            VALUES (
+                :game_id, :game_name, :user_name, :total_videos, :total_views,
+                :title, :views, :duration, :created_at, :ultima_solicitud
+            )'
         );
+        $stmt->bindValue(':game_id', $topStreamer['game_id']);
+        $stmt->bindValue(':game_name', $topStreamer['game_name']);
+        $stmt->bindValue(':user_name', $topStreamer['user_name']);
+        $stmt->bindValue(':total_videos', $topStreamer['total_videos'], PDO::PARAM_INT);
+        $stmt->bindValue(':total_views', $topStreamer['total_views'], PDO::PARAM_INT);
+        $stmt->bindValue(':title', $topStreamer['most_viewed_title']);
+        $stmt->bindValue(':views', $topStreamer['most_viewed_views'], PDO::PARAM_INT);
+        $stmt->bindValue(':duration', $topStreamer['most_viewed_duration'], PDO::PARAM_INT);
+        $stmt->bindValue(':created_at', $topStreamer['most_viewed_created_at']);
+        $stmt->bindValue(':ultima_solicitud', date('Y-m-d H:i:s'));
 
-        $stmt->bindValue(':game_name', $game_name);
-        $stmt->bindValue(':user_name', $user_name);
+        $stmt->execute();
+    }
+
+    public function getTopStreamer(): array
+    {
+        $pdo = $this->getConnection();
+
+        $stmt = $pdo->prepare('SELECT 
+                GAME_ID,
+                GAME_NAME,
+                USER_NAME,
+                TOTAL_VIDEOS,
+                TOTAL_VIEWS,
+                TITLE AS most_viewed_title,
+                VIEWS AS most_viewed_views,
+                DURATION AS most_viewed_duration,
+                CREATED_AT AS most_viewed_created_at
+            FROM cache');
+
         $stmt->execute();
 
-        $final = [];
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $final[] = array_map('strval', $row);
-        }
-
-        return $final;
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function clearCache(): void
@@ -200,7 +213,9 @@ class DataBaseRepository implements DataBaseRepositoryInterface
         $pdo->exec('DELETE FROM cache');
     }
 
-
+    /**
+     * @return PDO
+     */
     private function getConnection(): PDO
     {
         if ($this->db === null) {

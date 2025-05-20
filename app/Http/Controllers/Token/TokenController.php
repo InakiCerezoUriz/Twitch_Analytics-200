@@ -8,18 +8,14 @@ use App\Exceptions\InvalidArgumentException;
 use App\Services\TokenService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Laravel\Lumen\Routing\Controller as BaseController;
 
-class TokenController
+class TokenController extends BaseController
 {
-    private TokenValidator $validator;
-    private TokenService $TokenService;
-
     public function __construct(
-        TokenValidator $validator,
-        TokenService $TokenService
+        private readonly TokenValidator $validator,
+        private readonly TokenService $TokenService
     ) {
-        $this->validator    = $validator;
-        $this->TokenService = $TokenService;
     }
     public function getToken(Request $request): JsonResponse
     {
