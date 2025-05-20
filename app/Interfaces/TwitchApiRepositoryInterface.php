@@ -12,5 +12,7 @@ interface TwitchApiRepositoryInterface
 
     public function getApiTokenFromApi(): bool|string;
 
-    public function getTopGames(int $limit, string $token): array;
+    public function getTopGames(string $token): array;
+
+    public function getTopStreamer(array $game, string $token);
 }

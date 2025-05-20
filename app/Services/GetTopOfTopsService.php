@@ -17,12 +17,13 @@ class GetTopOfTopsService
     }
     public function getTopOfTops(?string $since): JsonResponse
     {
-        $since = $since ?? 600;
+        $since = $since ?? '600';
 
         $token = $this->tokenManager->getToken();
 
-        $topGames = $this->twitchApiRepository->getTopGames(3, $token);
+        $topGames = $this->twitchApiRepository->getTopGames($token);
 
+        $topGames = json_decode($topGames[0], true)['data'] ?? [];
 
         if (empty($topGames)) {
             return new JsonResponse([
@@ -32,18 +33,18 @@ class GetTopOfTopsService
 
         $ultimaSolicitud = $this->dataBaseRepository->getUltimaSolicitud();
 
-        //        if ((time() - $ultimaSolicitud) > $since) {
-        //            $this->dataBaseRepository->clearCache();
-        //        }
+        if ((time() - $ultimaSolicitud) > $since) {
+            $this->dataBaseRepository->clearCache();
 
-        $tops = $this->dataBaseRepository->getTops();
+            foreach ($topGames as $game) {
+                $topStreamer = $this->twitchApiRepository->getTopStreamer($game, $token);
 
-        $final = [];
-
-        foreach ($tops as $top) {
-            $final = $this->dataBaseRepository->obtenerInformacionJuego($top['game_name'], $top['user_name']);
+                $this->dataBaseRepository->insertarTopStreamer($topStreamer);
+            }
         }
 
-        return new JsonResponse($final, 200);
+        $topStreamers = $this->dataBaseRepository->getTopStreamer();
+
+        return new JsonResponse($topStreamers, 200);
     }
 }
