@@ -13,7 +13,7 @@ class GetUserByIdServiceTest extends TestCase
 {
     private DataBaseRepositoryInterface $dataBaseRepository;
     private TwitchApiRepositoryInterface $twitchApiRepository;
-    private $tokenManager;
+    private TokenManager $tokenManager;
 
     protected GetUserByIdService $service;
 
