@@ -15,6 +15,6 @@ grumphp:
             config: .php-cs-fixer.php
             allow_risky: true
             using_cache: false
-        #phpunit:
-        #    config_file: phpunit.xml.dist
-        #    always_execute: true
+        phpunit:
+            config_file: phpunit.xml.dist
+            always_execute: true

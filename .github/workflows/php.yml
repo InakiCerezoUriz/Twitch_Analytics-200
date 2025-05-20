@@ -46,4 +46,3 @@ jobs:
       - name: Run Grump
         run: |
           composer grumphp
-        shell: bash
