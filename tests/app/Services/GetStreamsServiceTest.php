@@ -1,10 +1,10 @@
 <?php
 
-namespace Tests\App\Services;
+namespace TwitchAnalytics\Tests\app\Services;
 
 use App\Infrastructure\TokenManager;
+use App\Interfaces\TwitchApiRepositoryInterface;
 use App\Models\Stream;
-use App\Repositories\TwitchApiRepository;
 use App\Services\GetStreamsService;
 use Illuminate\Http\JsonResponse;
 use Laravel\Lumen\Testing\TestCase;
@@ -12,8 +12,8 @@ use PHPUnit\Framework\MockObject\Exception;
 
 class GetStreamsServiceTest extends TestCase
 {
-    private $twitchApiRepository;
-    private $tokenManager;
+    private TwitchApiRepositoryInterface $twitchApiRepository;
+    private TokenManager $tokenManager;
     private GetStreamsService $service;
 
     public function createApplication()
@@ -27,10 +27,10 @@ class GetStreamsServiceTest extends TestCase
     {
         parent::setUp();
 
-        $this->twitchApiRepository = $this->createMock(TwitchApiRepository::class);
-        $this->tokenManager = $this->createMock(TokenManager::class);
+        $this->twitchApiRepository = $this->createMock(TwitchApiRepositoryInterface::class);
+        $this->tokenManager        = $this->createMock(TokenManager::class);
 
-        $this->app->instance(TwitchApiRepository::class, $this->twitchApiRepository);
+        $this->app->instance(TwitchApiRepositoryInterface::class, $this->twitchApiRepository);
         $this->app->instance(TokenManager::class, $this->tokenManager);
 
         $this->service = $this->app->make(GetStreamsService::class);
@@ -46,7 +46,7 @@ class GetStreamsServiceTest extends TestCase
         $mockApiResponse = [
             new Stream('Stream 1', 'User1'),
             new Stream('Stream 2', 'User2'),
-            new Stream('Stream 3', 'User3')
+            new Stream('Stream 3', 'User3'),
         ];
 
         $this->twitchApiRepository->method('getStreamsFromTwitchApi')
