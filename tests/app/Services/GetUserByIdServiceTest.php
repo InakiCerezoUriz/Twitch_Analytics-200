@@ -3,16 +3,16 @@
 namespace Tests\App\Services;
 
 use App\Infrastructure\TokenManager;
-use App\Repositories\DataBaseRepository;
-use App\Repositories\TwitchApiRepository;
+use App\Interfaces\DataBaseRepositoryInterface;
+use App\Interfaces\TwitchApiRepositoryInterface;
 use App\Services\GetUserByIdService;
 use Laravel\Lumen\Testing\TestCase;
 use PHPUnit\Framework\MockObject\Exception;
 
 class GetUserByIdServiceTest extends TestCase
 {
-    private $dataBaseRepository;
-    private $twitchApiRepository;
+    private DataBaseRepositoryInterface $dataBaseRepository;
+    private TwitchApiRepositoryInterface $twitchApiRepository;
     private $tokenManager;
 
     protected GetUserByIdService $service;
@@ -29,12 +29,12 @@ class GetUserByIdServiceTest extends TestCase
     {
         parent::setUp();
 
-        $this->dataBaseRepository = $this->createMock(DataBaseRepository::class);
-        $this->twitchApiRepository = $this->createMock(TwitchApiRepository::class);
+        $this->dataBaseRepository = $this->createMock(DataBaseRepositoryInterface::class);
+        $this->twitchApiRepository = $this->createMock(TwitchApiRepositoryInterface::class);
         $this->tokenManager = $this->createMock(TokenManager::class);
 
-        $this->app->instance(DataBaseRepository::class, $this->dataBaseRepository);
-        $this->app->instance(TwitchApiRepository::class, $this->twitchApiRepository);
+        $this->app->instance(DataBaseRepositoryInterface::class, $this->dataBaseRepository);
+        $this->app->instance(TwitchApiRepositoryInterface::class, $this->twitchApiRepository);
         $this->app->instance(TokenManager::class, $this->tokenManager);
 
         $this->service = $this->app->make(GetUserByIdService::class);
