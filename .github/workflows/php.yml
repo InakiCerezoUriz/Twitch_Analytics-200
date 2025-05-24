@@ -30,15 +30,6 @@ jobs:
         run: |
           composer install
 
-      - name: Run Tests
+      - name: Run Grump
         run: |
-          composer test
-          
-      - name: Fetch the GIT diff
-        id: fetch-diff
-        run: |
-          DIFF=$(git diff --staged --no-color)
-          echo "Diff: $DIFF"
-          export GRUMPHP_GIT_WORKING_DIR="$(git rev-parse --show-toplevel)"
-          (cd "$GRUMPHP_GIT_WORKING_DIR" && echo "$DIFF" | vendor/bin/grumphp git:pre-commit --verbose --skip-success-output)
-        shell: bash
+          composer grumphp
