@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\App\Services;
+namespace TwitchAnalytics\Tests\app\Services;
 
 use App\Infrastructure\TokenManager;
 use App\Interfaces\DataBaseRepositoryInterface;
@@ -29,9 +29,9 @@ class GetUserByIdServiceTest extends TestCase
     {
         parent::setUp();
 
-        $this->dataBaseRepository = $this->createMock(DataBaseRepositoryInterface::class);
+        $this->dataBaseRepository  = $this->createMock(DataBaseRepositoryInterface::class);
         $this->twitchApiRepository = $this->createMock(TwitchApiRepositoryInterface::class);
-        $this->tokenManager = $this->createMock(TokenManager::class);
+        $this->tokenManager        = $this->createMock(TokenManager::class);
 
         $this->app->instance(DataBaseRepositoryInterface::class, $this->dataBaseRepository);
         $this->app->instance(TwitchApiRepositoryInterface::class, $this->twitchApiRepository);
