@@ -31,6 +31,7 @@
   "scripts": {
     "test": "phpunit",
     "test:coverage": "phpunit --coverage-html coverage",
+    "grumphp": "grumphp run",
     "cs-check": "phpcs",
     "cs-fix": "phpcbf",
     "start": "php -S 0.0.0.0:8000 -t public",
