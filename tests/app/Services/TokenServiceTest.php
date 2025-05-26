@@ -5,8 +5,8 @@ namespace TwitchAnalytics\Tests\app\Services;
 use App\Infrastructure\TokenManager;
 use App\Interfaces\DataBaseRepositoryInterface;
 use App\Services\TokenService;
-use Laravel\Lumen\Testing\TestCase;
 use PHPUnit\Framework\MockObject\Exception;
+use PHPUnit\Framework\TestCase;
 
 class TokenServiceTest extends TestCase
 {
@@ -14,10 +14,6 @@ class TokenServiceTest extends TestCase
     private TokenManager $tokenManager;
     private TokenService $service;
 
-    public function createApplication()
-    {
-        return require __DIR__ . '/../../../bootstrap/app.php';
-    }
 
     /**
      * @throws Exception
@@ -29,10 +25,10 @@ class TokenServiceTest extends TestCase
         $this->dataBaseRepository = $this->createMock(DataBaseRepositoryInterface::class);
         $this->tokenManager       = $this->createMock(TokenManager::class);
 
-        $this->app->instance(DataBaseRepositoryInterface::class, $this->dataBaseRepository);
-        $this->app->instance(TokenManager::class, $this->tokenManager);
-
-        $this->service = $this->app->make(TokenService::class);
+        $this->service = new TokenService(
+            $this->dataBaseRepository,
+            $this->tokenManager
+        );
     }
 
     /**
