@@ -17,7 +17,7 @@ class UserRegisterServiceTest extends TestCase
         parent::setUp();
 
         $this->dataBaseRepository = $this->createMock(DataBaseRepositoryInterface::class);
-        $this->service = new UserRegisterService($this->dataBaseRepository);
+        $this->service            = new UserRegisterService($this->dataBaseRepository);
     }
 
     /**
@@ -25,7 +25,7 @@ class UserRegisterServiceTest extends TestCase
      */
     public function givenExistingApiKeyUpdatesIt(): void
     {
-        $email = 'existing@mail.com';
+        $email          = 'existing@mail.com';
         $existingApiKey = 'valid-key';
 
         $this->dataBaseRepository->method('getApiKey')
