@@ -5,9 +5,7 @@ namespace TwitchAnalytics\Tests\app\Services;
 use App\Infrastructure\TokenManager;
 use App\Interfaces\DataBaseRepositoryInterface;
 use App\Interfaces\TwitchApiRepositoryInterface;
-use App\Models\TopStreamer;
 use App\Services\GetTopOfTopsService;
-use Illuminate\Http\JsonResponse;
 use PHPUnit\Framework\TestCase;
 
 class GetTopOfTopsServiceTest extends TestCase
@@ -21,9 +19,9 @@ class GetTopOfTopsServiceTest extends TestCase
     {
         parent::setUp();
 
-        $this->dataBaseRepository = $this->createMock(DataBaseRepositoryInterface::class);
+        $this->dataBaseRepository  = $this->createMock(DataBaseRepositoryInterface::class);
         $this->twitchApiRepository = $this->createMock(TwitchApiRepositoryInterface::class);
-        $this->tokenManager = $this->createMock(TokenManager::class);
+        $this->tokenManager        = $this->createMock(TokenManager::class);
 
         $this->service = new GetTopOfTopsService(
             $this->dataBaseRepository,
@@ -59,7 +57,7 @@ class GetTopOfTopsServiceTest extends TestCase
 
         $this->dataBaseRepository->method('getUltimaSolicitud')->willReturn(time());
         $this->dataBaseRepository->method('getTopStreamer')->willReturn([
-            ['name' => 'TopStreamer', 'game' => 'Game 1']
+            ['name' => 'TopStreamer', 'game' => 'Game 1'],
         ]);
 
         $response = $this->service->getTopOfTops('600');
