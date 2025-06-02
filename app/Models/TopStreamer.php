@@ -4,41 +4,41 @@ namespace TwitchAnalytics\Models;
 
 class TopStreamer
 {
-    private string $game_id;
-    private string $game_name;
-    private string $user_name;
-    private string $total_videos;
-    private string $total_views;
-    private string $most_viewed_title;
-    private string $most_viewed_views;
-    private string $most_viewed_duration;
-    private string $most_viewed_created_at;
+    private string $gameId;
+    private string $gameName;
+    private string $userName;
+    private string $totalVideos;
+    private string $totalViews;
+    private string $mostViewedTitle;
+    private string $mostViewedViews;
+    private string $mostViewedDuration;
+    private string $mostViewedCreatedAt;
 
     public function __construct(array $game, array $streams, int $topStreamerStreams, int $totalViews)
     {
-        $this->game_id                = $game['id'];
-        $this->game_name              = $game['name'];
-        $this->user_name              = $streams['user_name'];
-        $this->total_videos           = $topStreamerStreams;
-        $this->total_views            = $totalViews;
-        $this->most_viewed_title      = $streams['title'];
-        $this->most_viewed_views      = $streams['view_count'];
-        $this->most_viewed_duration   = $streams['duration'];
-        $this->most_viewed_created_at = $streams['created_at'];
+        $this->gameId              = $game['id'];
+        $this->gameName            = $game['name'];
+        $this->userName            = $streams['user_name'];
+        $this->totalVideos         = $topStreamerStreams;
+        $this->totalViews          = $totalViews;
+        $this->mostViewedTitle     = $streams['title'];
+        $this->mostViewedViews     = $streams['view_count'];
+        $this->mostViewedDuration  = $streams['duration'];
+        $this->mostViewedCreatedAt = $streams['created_at'];
     }
 
     public function getTopStreamer(): array
     {
         return [
-            'game_id'                => $this->game_id,
-            'game_name'              => $this->game_name,
-            'user_name'              => $this->user_name,
-            'total_videos'           => $this->total_videos,
-            'total_views'            => $this->total_views,
-            'most_viewed_title'      => $this->most_viewed_title,
-            'most_viewed_views'      => $this->most_viewed_views,
-            'most_viewed_duration'   => $this->most_viewed_duration,
-            'most_viewed_created_at' => $this->most_viewed_created_at,
+            'game_id'                => $this->gameId,
+            'game_name'              => $this->gameName,
+            'user_name'              => $this->userName,
+            'total_videos'           => $this->totalVideos,
+            'total_views'            => $this->totalViews,
+            'most_viewed_title'      => $this->mostViewedTitle,
+            'most_viewed_views'      => $this->mostViewedViews,
+            'most_viewed_duration'   => $this->mostViewedDuration,
+            'most_viewed_created_at' => $this->mostViewedCreatedAt,
         ];
     }
 }

@@ -4,39 +4,39 @@ namespace TwitchAnalytics\Models;
 
 class EnrichedStream
 {
-    private string $stream_id;
-    private string $user_id;
-    private string $user_name;
-    private int $viewer_count;
+    private string $streamId;
+    private string $userId;
+    private string $userName;
+    private int $viewerCount;
     private string $title;
-    private string $user_display_name;
-    private string $profile_image_url;
+    private string $userDisplayName;
+    private string $profileImageUrl;
 
     public function setStreamInfo(array $streamInfo): void
     {
-        $this->stream_id    = $streamInfo['id'];
-        $this->user_id      = $streamInfo['user_id'];
-        $this->user_name    = $streamInfo['user_name'];
-        $this->viewer_count = $streamInfo['viewer_count'];
-        $this->title        = $streamInfo['title'];
+        $this->streamId    = $streamInfo['id'];
+        $this->userId      = $streamInfo['user_id'];
+        $this->userName    = $streamInfo['user_name'];
+        $this->viewerCount = $streamInfo['viewer_count'];
+        $this->title       = $streamInfo['title'];
     }
 
     public function setUserInfo(array $userInfo): void
     {
-        $this->user_display_name = $userInfo['display_name'];
-        $this->profile_image_url = $userInfo['profile_image_url'];
+        $this->userDisplayName = $userInfo['display_name'];
+        $this->profileImageUrl = $userInfo['profile_image_url'];
     }
 
     public function getEnrichedStream(): array
     {
         return [
-            'stream_id'         => $this->stream_id,
-            'user_id'           => $this->user_id,
-            'user_name'         => $this->user_name,
-            'viewer_count'      => $this->viewer_count,
+            'stream_id'         => $this->streamId,
+            'user_id'           => $this->userId,
+            'user_name'         => $this->userName,
+            'viewer_count'      => $this->viewerCount,
             'title'             => $this->title,
-            'user_display_name' => $this->user_display_name,
-            'profile_image_url' => $this->profile_image_url,
+            'user_display_name' => $this->userDisplayName,
+            'profile_image_url' => $this->profileImageUrl,
         ];
     }
 }

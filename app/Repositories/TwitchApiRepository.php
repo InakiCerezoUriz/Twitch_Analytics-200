@@ -11,17 +11,17 @@ class TwitchApiRepository implements TwitchApiRepositoryInterface
 {
     public function getUserFromTwitchApi(string $id, string $token): array
     {
-        $api_url = 'https://api.twitch.tv/helix/users?id=' . $id;
+        $apiUrl = 'https://api.twitch.tv/helix/users?id=' . $id;
 
-        return $this->fetchFromTwitch($api_url, $this->getHeaders($token));
+        return $this->fetchFromTwitch($apiUrl, $this->getHeaders($token));
     }
 
     public function getStreamsFromTwitchApi(string $token): array
     {
-        $api_url = 'https://api.twitch.tv/helix/streams';
+        $apiUrl = 'https://api.twitch.tv/helix/streams';
 
         $streams               = [];
-        [$response, $httpCode] = $this->fetchFromTwitch($api_url, $this->getHeaders($token));
+        [$response, $httpCode] = $this->fetchFromTwitch($apiUrl, $this->getHeaders($token));
 
         if ($httpCode != 200) {
             return [$response, $httpCode];
@@ -37,9 +37,9 @@ class TwitchApiRepository implements TwitchApiRepositoryInterface
 
     public function getEnrichedStreamsFromTwitchApi(string $token, string $limit): array
     {
-        $api_url = 'https://api.twitch.tv/helix/streams';
+        $apiUrl = 'https://api.twitch.tv/helix/streams';
 
-        [$result, $httpCode] = $this->fetchFromTwitch($api_url, $this->getHeaders($token));
+        [$result, $httpCode] = $this->fetchFromTwitch($apiUrl, $this->getHeaders($token));
 
         if ($httpCode != 200) {
             return [$result, $httpCode];
@@ -55,15 +55,15 @@ class TwitchApiRepository implements TwitchApiRepositoryInterface
 
             $enrichedStream->setStreamInfo($stream);
 
-            $user_id = $stream['user_id'];
+            $userId = $stream['user_id'];
 
-            [$result, $httpCode] = $this->getUserFromTwitchApi($user_id, $token);
+            [$result, $httpCode] = $this->getUserFromTwitchApi($userId, $token);
 
             if ($httpCode != 200) {
                 return [$result, $httpCode];
             }
-            $user_data = json_decode($result, true);
-            $enrichedStream->setUserInfo($user_data['data'][0]);
+            $userData = json_decode($result, true);
+            $enrichedStream->setUserInfo($userData['data'][0]);
 
             $enrichedStreams[] = $enrichedStream->getEnrichedStream();
         }
@@ -73,17 +73,17 @@ class TwitchApiRepository implements TwitchApiRepositoryInterface
 
     public function getApiTokenFromApi(): bool|string
     {
-        $api_url     = 'https://id.twitch.tv/oauth2/token';
-        $post_fields = http_build_query([
+        $apiUrl     = 'https://id.twitch.tv/oauth2/token';
+        $postFields = http_build_query([
             'client_id'     => env('TWITCH_CLIENT_ID'),
             'client_secret' => env('TWITCH_CLIENT_SECRET'),
             'grant_type'    => 'client_credentials',
         ]);
 
-        $ch = curl_init($api_url);
+        $ch = curl_init($apiUrl);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $post_fields);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postFields);
 
         $response = curl_exec($ch);
         curl_close($ch);

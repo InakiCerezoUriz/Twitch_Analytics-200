@@ -63,10 +63,10 @@ class TokenValidatorTest extends TestCase
      */
     public function givenValidApiKeyReturnsApiKey(): void
     {
-        $api_key = 'valid-api-key';
+        $apiKey = 'valid-api-key';
 
-        $response = $this->validator->validateApiKey($api_key);
+        $response = $this->validator->validateApiKey($apiKey);
 
-        $this->assertEquals($api_key, $response);
+        $this->assertEquals($apiKey, $response);
     }
 }
