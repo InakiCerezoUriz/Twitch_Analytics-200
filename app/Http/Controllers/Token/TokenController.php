@@ -20,10 +20,10 @@ class TokenController extends BaseController
     public function getToken(Request $request): JsonResponse
     {
         try {
-            $email   = $this->validator->validateEmail($request->get('email'));
-            $api_key = $this->validator->validateApiKey($request->get('api_key'));
+            $email  = $this->validator->validateEmail($request->get('email'));
+            $apiKey = $this->validator->validateApiKey($request->get('api_key'));
 
-            return $this->TokenService->getToken($email, $api_key);
+            return $this->TokenService->getToken($email, $apiKey);
         } catch (EmptyEmailException | InvalidArgumentException | EmptyApiKeyException $e) {
             return new JsonResponse([
                 'error' => $e->getMessage(),
