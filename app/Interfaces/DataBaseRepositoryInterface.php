@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Interfaces;
+namespace TwitchAnalytics\Interfaces;
 
-use App\Models\TopStreamer;
+use TwitchAnalytics\Models\TopStreamer;
 
 interface DataBaseRepositoryInterface
 {

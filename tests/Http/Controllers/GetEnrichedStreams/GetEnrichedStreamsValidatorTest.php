@@ -1,10 +1,10 @@
 <?php
 
-namespace GetEnrichedStreams;
+namespace TwitchAnalytics\Tests\Http\Controllers\GetEnrichedStreams;
 
-use App\Exceptions\InvalidLimitException;
-use App\Http\Controllers\GetEnrichedStreams\GetEnrichedStreamsValidator;
 use PHPUnit\Framework\TestCase;
+use TwitchAnalytics\Exceptions\InvalidLimitException;
+use TwitchAnalytics\Http\Controllers\GetEnrichedStreams\GetEnrichedStreamsValidator;
 
 class GetEnrichedStreamsValidatorTest extends TestCase
 {

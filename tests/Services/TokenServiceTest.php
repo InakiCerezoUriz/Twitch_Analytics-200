@@ -1,12 +1,12 @@
 <?php
 
-namespace TwitchAnalytics\Tests\app\Services;
+namespace TwitchAnalytics\Tests\Services;
 
-use App\Infrastructure\TokenManager;
-use App\Interfaces\DataBaseRepositoryInterface;
-use App\Services\TokenService;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
+use TwitchAnalytics\Infrastructure\TokenManager;
+use TwitchAnalytics\Interfaces\DataBaseRepositoryInterface;
+use TwitchAnalytics\Services\TokenService;
 
 class TokenServiceTest extends TestCase
 {

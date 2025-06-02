@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Exceptions;
+namespace TwitchAnalytics\Exceptions;
 
 class InvalidLimitException extends \RuntimeException
 {

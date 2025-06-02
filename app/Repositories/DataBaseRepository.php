@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Repositories;
+namespace TwitchAnalytics\Repositories;
 
-use App\Interfaces\DataBaseRepositoryInterface;
-use App\Models\TopStreamer;
 use PDO;
+use TwitchAnalytics\Interfaces\DataBaseRepositoryInterface;
+use TwitchAnalytics\Models\TopStreamer;
 
 class DataBaseRepository implements DataBaseRepositoryInterface
 {

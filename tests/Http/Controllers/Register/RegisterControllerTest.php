@@ -1,9 +1,9 @@
 <?php
 
-namespace TwitchAnalytics\Tests\app\Http\Controllers\Register;
+namespace TwitchAnalytics\Tests\Http\Controllers\Register;
 
-use App\Services\UserRegisterService;
 use Illuminate\Http\JsonResponse;
+use TwitchAnalytics\Services\UserRegisterService;
 use TwitchAnalytics\Tests\TestCase;
 
 class RegisterControllerTest extends TestCase

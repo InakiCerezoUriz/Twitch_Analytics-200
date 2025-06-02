@@ -1,9 +1,9 @@
 <?php
 
-namespace TwitchAnalytics\Tests\app\Http\Controllers\GetStreams;
+namespace TwitchAnalytics\Tests\Http\Controllers\GetStreams;
 
-use App\Services\GetStreamsService;
 use Illuminate\Http\JsonResponse;
+use TwitchAnalytics\Services\GetStreamsService;
 use TwitchAnalytics\Tests\TestCase;
 
 class GetStreamsControllerTest extends TestCase

@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\GetEnrichedStreams;
+namespace TwitchAnalytics\Http\Controllers\GetEnrichedStreams;
 
-use App\Exceptions\InvalidLimitException;
-use App\Services\GetEnrichedStreamsService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Controller as BaseController;
+use TwitchAnalytics\Exceptions\InvalidLimitException;
+use TwitchAnalytics\Services\GetEnrichedStreamsService;
 
 class GetEnrichedStreamsController extends BaseController
 {

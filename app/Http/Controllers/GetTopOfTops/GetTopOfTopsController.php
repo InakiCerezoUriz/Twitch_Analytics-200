@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\GetTopOfTops;
+namespace TwitchAnalytics\Http\Controllers\GetTopOfTops;
 
-use App\Exceptions\EmptyOrInvalidSinceException;
-use App\Services\GetTopOfTopsService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Controller as BaseController;
+use TwitchAnalytics\Exceptions\EmptyOrInvalidSinceException;
+use TwitchAnalytics\Services\GetTopOfTopsService;
 
 class GetTopOfTopsController extends BaseController
 {

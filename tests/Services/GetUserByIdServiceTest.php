@@ -1,13 +1,13 @@
 <?php
 
-namespace TwitchAnalytics\Tests\app\Services;
+namespace TwitchAnalytics\Tests\Services;
 
-use App\Infrastructure\TokenManager;
-use App\Interfaces\DataBaseRepositoryInterface;
-use App\Interfaces\TwitchApiRepositoryInterface;
-use App\Services\GetUserByIdService;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
+use TwitchAnalytics\Infrastructure\TokenManager;
+use TwitchAnalytics\Interfaces\DataBaseRepositoryInterface;
+use TwitchAnalytics\Interfaces\TwitchApiRepositoryInterface;
+use TwitchAnalytics\Services\GetUserByIdService;
 
 class GetUserByIdServiceTest extends TestCase
 {

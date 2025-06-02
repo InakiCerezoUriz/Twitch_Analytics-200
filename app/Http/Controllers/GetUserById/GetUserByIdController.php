@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\GetUserById;
+namespace TwitchAnalytics\Http\Controllers\GetUserById;
 
-use App\Exceptions\EmptyOrInvalidIdException;
-use App\Services\GetUserByIdService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Controller as BaseController;
+use TwitchAnalytics\Exceptions\EmptyOrInvalidIdException;
+use TwitchAnalytics\Services\GetUserByIdService;
 
 class GetUserByIdController extends BaseController
 {

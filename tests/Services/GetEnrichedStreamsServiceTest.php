@@ -1,12 +1,12 @@
 <?php
 
-namespace TwitchAnalytics\Tests\app\Services;
+namespace TwitchAnalytics\Tests\Services;
 
-use App\Infrastructure\TokenManager;
-use App\Interfaces\TwitchApiRepositoryInterface;
-use App\Services\GetEnrichedStreamsService;
 use Illuminate\Http\JsonResponse;
 use PHPUnit\Framework\TestCase;
+use TwitchAnalytics\Infrastructure\TokenManager;
+use TwitchAnalytics\Interfaces\TwitchApiRepositoryInterface;
+use TwitchAnalytics\Services\GetEnrichedStreamsService;
 
 class GetEnrichedStreamsServiceTest extends TestCase
 {

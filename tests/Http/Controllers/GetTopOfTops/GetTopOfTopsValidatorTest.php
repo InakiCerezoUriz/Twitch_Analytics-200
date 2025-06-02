@@ -1,10 +1,10 @@
 <?php
 
-namespace TwitchAnalytics\Tests\app\Http\Controllers\GetTopOfTops;
+namespace TwitchAnalytics\Tests\Http\Controllers\GetTopOfTops;
 
-use App\Exceptions\EmptyOrInvalidSinceException;
-use App\Http\Controllers\GetTopOfTops\GetTopOfTopsValidator;
 use PHPUnit\Framework\TestCase;
+use TwitchAnalytics\Exceptions\EmptyOrInvalidSinceException;
+use TwitchAnalytics\Http\Controllers\GetTopOfTops\GetTopOfTopsValidator;
 
 class GetTopOfTopsValidatorTest extends TestCase
 {

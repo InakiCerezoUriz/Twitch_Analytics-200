@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\Token;
+namespace TwitchAnalytics\Http\Controllers\Token;
 
-use App\Exceptions\EmptyApiKeyException;
-use App\Exceptions\EmptyEmailException;
-use App\Exceptions\InvalidArgumentException;
-use App\Services\TokenService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Controller as BaseController;
+use TwitchAnalytics\Exceptions\EmptyApiKeyException;
+use TwitchAnalytics\Exceptions\EmptyEmailException;
+use TwitchAnalytics\Exceptions\InvalidArgumentException;
+use TwitchAnalytics\Services\TokenService;
 
 class TokenController extends BaseController
 {

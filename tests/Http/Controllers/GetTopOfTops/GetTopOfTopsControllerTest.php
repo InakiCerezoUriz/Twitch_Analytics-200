@@ -1,9 +1,9 @@
 <?php
 
-namespace TwitchAnalytics\Tests\app\Http\Controllers\GetTopOfTops;
+namespace TwitchAnalytics\Tests\Http\Controllers\GetTopOfTops;
 
-use App\Services\GetTopOfTopsService;
 use Illuminate\Http\JsonResponse;
+use TwitchAnalytics\Services\GetTopOfTopsService;
 use TwitchAnalytics\Tests\TestCase;
 
 class GetTopOfTopsControllerTest extends TestCase

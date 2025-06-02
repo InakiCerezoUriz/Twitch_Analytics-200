@@ -1,10 +1,10 @@
 <?php
 
-namespace TwitchAnalytics\Tests\app\Http\Controllers\GetUserById;
+namespace TwitchAnalytics\Tests\Http\Controllers\GetUserById;
 
-use App\Exceptions\EmptyOrInvalidIdException;
-use App\Http\Controllers\GetUserById\GetUserByIdValidator;
 use PHPUnit\Framework\TestCase;
+use TwitchAnalytics\Exceptions\EmptyOrInvalidIdException;
+use TwitchAnalytics\Http\Controllers\GetUserById\GetUserByIdValidator;
 
 class GetUserByIdValidatorTest extends TestCase
 {

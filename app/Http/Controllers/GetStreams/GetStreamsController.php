@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\GetStreams;
+namespace TwitchAnalytics\Http\Controllers\GetStreams;
 
-use App\Services\GetStreamsService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Controller as BaseController;
+use TwitchAnalytics\Services\GetStreamsService;
 
 class GetStreamsController extends BaseController
 {

@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Repositories;
+namespace TwitchAnalytics\Repositories;
 
-use App\Interfaces\TwitchApiRepositoryInterface;
-use App\Models\EnrichedStream;
-use App\Models\Stream;
-use App\Models\TopStreamer;
+use TwitchAnalytics\Interfaces\TwitchApiRepositoryInterface;
+use TwitchAnalytics\Models\EnrichedStream;
+use TwitchAnalytics\Models\Stream;
+use TwitchAnalytics\Models\TopStreamer;
 
 class TwitchApiRepository implements TwitchApiRepositoryInterface
 {

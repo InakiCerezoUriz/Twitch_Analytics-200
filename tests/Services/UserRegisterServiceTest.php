@@ -1,11 +1,11 @@
 <?php
 
-namespace TwitchAnalytics\Tests\app\Services;
+namespace TwitchAnalytics\Tests\Services;
 
-use App\Interfaces\DataBaseRepositoryInterface;
-use App\Services\UserRegisterService;
 use Illuminate\Http\JsonResponse;
 use PHPUnit\Framework\TestCase;
+use TwitchAnalytics\Interfaces\DataBaseRepositoryInterface;
+use TwitchAnalytics\Services\UserRegisterService;
 
 class UserRegisterServiceTest extends TestCase
 {

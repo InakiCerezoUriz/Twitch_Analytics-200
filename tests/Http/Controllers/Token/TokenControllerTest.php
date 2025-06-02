@@ -1,10 +1,10 @@
 <?php
 
-namespace TwitchAnalytics\Tests\app\Http\Controllers\Token;
+namespace TwitchAnalytics\Tests\Http\Controllers\Token;
 
-use App\Services\TokenService;
 use Illuminate\Http\JsonResponse;
 use Mockery;
+use TwitchAnalytics\Services\TokenService;
 use TwitchAnalytics\Tests\TestCase;
 
 class TokenControllerTest extends TestCase
