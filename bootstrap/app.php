@@ -35,17 +35,17 @@ $app = new Laravel\Lumen\Application(
 
 $app->singleton(
     Illuminate\Contracts\Debug\ExceptionHandler::class,
-    App\Exceptions\Handler::class
+    TwitchAnalytics\Exceptions\Handler::class
 );
 
 $app->bind(
-    App\Interfaces\DataBaseRepositoryInterface::class,
-    App\Repositories\DataBaseRepository::class
+    TwitchAnalytics\Interfaces\DataBaseRepositoryInterface::class,
+    TwitchAnalytics\Repositories\DataBaseRepository::class
 );
 
 $app->bind(
-    App\Interfaces\TwitchApiRepositoryInterface::class,
-    App\Repositories\TwitchApiRepository::class
+    TwitchAnalytics\Interfaces\TwitchApiRepositoryInterface::class,
+    TwitchAnalytics\Repositories\TwitchApiRepository::class
 );
 
 /*
@@ -73,7 +73,7 @@ $app->configure('app');
 */
 
 $app->routeMiddleware([
-    'auth' => App\Http\Middleware\AuthorizationMiddleware::class,
+    'auth' => TwitchAnalytics\Http\Middleware\AuthorizationMiddleware::class,
 ]);
 
 // $app->middleware([
@@ -111,7 +111,7 @@ $app->routeMiddleware([
 */
 
 $app->router->group([
-    'namespace' => 'App\Http\Controllers',
+    'namespace' => 'TwitchAnalytics\Http\Controllers',
 ], function ($router) {
     require __DIR__ . '/../routes/web.php';
 });

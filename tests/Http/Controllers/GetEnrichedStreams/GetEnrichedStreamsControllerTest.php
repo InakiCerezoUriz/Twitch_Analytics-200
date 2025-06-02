@@ -1,9 +1,9 @@
 <?php
 
-namespace GetEnrichedStreams;
+namespace TwitchAnalytics\Tests\Http\Controllers\GetEnrichedStreams;
 
-use App\Services\GetEnrichedStreamsService;
 use Illuminate\Http\JsonResponse;
+use TwitchAnalytics\Services\GetEnrichedStreamsService;
 use TwitchAnalytics\Tests\TestCase;
 
 class GetEnrichedStreamsControllerTest extends TestCase

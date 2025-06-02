@@ -19,12 +19,11 @@
   },
   "autoload": {
     "psr-4": {
-        "TwitchAnalytics\\": "src/"
+      "TwitchAnalytics\\": "app/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "App\\": "app/",
       "TwitchAnalytics\\Tests\\": "tests/"
     }
   },

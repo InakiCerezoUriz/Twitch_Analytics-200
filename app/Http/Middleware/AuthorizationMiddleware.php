@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Middleware;
+namespace TwitchAnalytics\Http\Middleware;
 
-use App\Infrastructure\TokenManager;
 use Closure;
 use Illuminate\Http\JsonResponse;
+use TwitchAnalytics\Infrastructure\TokenManager;
 
 class AuthorizationMiddleware
 {

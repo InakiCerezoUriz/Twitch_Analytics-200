@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\GetEnrichedStreams;
+namespace TwitchAnalytics\Http\Controllers\GetEnrichedStreams;
 
-use App\Exceptions\InvalidLimitException;
+use TwitchAnalytics\Exceptions\InvalidLimitException;
 
 class GetEnrichedStreamsValidator
 {

@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Services;
+namespace TwitchAnalytics\Services;
 
-use App\Interfaces\DataBaseRepositoryInterface;
 use Illuminate\Http\JsonResponse;
+use TwitchAnalytics\Interfaces\DataBaseRepositoryInterface;
 
 class UserRegisterService
 {

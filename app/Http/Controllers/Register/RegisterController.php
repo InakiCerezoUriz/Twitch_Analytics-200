@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Register;
+namespace TwitchAnalytics\Http\Controllers\Register;
 
-use App\Exceptions\EmptyEmailParameterException;
-use App\Exceptions\InvalidArgumentException;
-use App\Services\UserRegisterService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Controller as BaseController;
+use TwitchAnalytics\Exceptions\EmptyEmailParameterException;
+use TwitchAnalytics\Exceptions\InvalidArgumentException;
+use TwitchAnalytics\Services\UserRegisterService;
 
 class RegisterController extends BaseController
 {

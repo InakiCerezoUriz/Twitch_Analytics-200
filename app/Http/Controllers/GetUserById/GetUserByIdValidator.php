@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\GetUserById;
+namespace TwitchAnalytics\Http\Controllers\GetUserById;
 
-use App\Exceptions\EmptyOrInvalidIdException;
+use TwitchAnalytics\Exceptions\EmptyOrInvalidIdException;
 
 class GetUserByIdValidator
 {

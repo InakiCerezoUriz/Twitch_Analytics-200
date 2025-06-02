@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Infrastructure;
+namespace TwitchAnalytics\Infrastructure;
 
-use App\Interfaces\DataBaseRepositoryInterface;
-use App\Interfaces\TwitchApiRepositoryInterface;
+use TwitchAnalytics\Interfaces\DataBaseRepositoryInterface;
+use TwitchAnalytics\Interfaces\TwitchApiRepositoryInterface;
 
 class TokenManager
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Exceptions;
+namespace TwitchAnalytics\Exceptions;
 
 class EmptyOrInvalidIdException extends \RuntimeException
 {

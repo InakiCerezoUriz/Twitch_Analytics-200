@@ -1,12 +1,12 @@
 <?php
 
-namespace TwitchAnalytics\Tests\app\Http\Controllers\Token;
+namespace TwitchAnalytics\Tests\Http\Controllers\Token;
 
-use App\Exceptions\EmptyApiKeyException;
-use App\Exceptions\EmptyEmailException;
-use App\Exceptions\InvalidArgumentException;
-use App\Http\Controllers\Token\TokenValidator;
 use PHPUnit\Framework\TestCase;
+use TwitchAnalytics\Exceptions\EmptyApiKeyException;
+use TwitchAnalytics\Exceptions\EmptyEmailException;
+use TwitchAnalytics\Exceptions\InvalidArgumentException;
+use TwitchAnalytics\Http\Controllers\Token\TokenValidator;
 
 class TokenValidatorTest extends TestCase
 {

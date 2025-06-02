@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Services;
+namespace TwitchAnalytics\Services;
 
-use App\Infrastructure\TokenManager;
-use App\Interfaces\TwitchApiRepositoryInterface;
 use Illuminate\Http\JsonResponse;
+use TwitchAnalytics\Infrastructure\TokenManager;
+use TwitchAnalytics\Interfaces\TwitchApiRepositoryInterface;
 
 class GetEnrichedStreamsService
 {

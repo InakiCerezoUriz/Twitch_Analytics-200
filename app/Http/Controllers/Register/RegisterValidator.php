@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Register;
+namespace TwitchAnalytics\Http\Controllers\Register;
 
-use App\Exceptions\EmptyEmailParameterException;
-use App\Exceptions\InvalidArgumentException;
+use TwitchAnalytics\Exceptions\EmptyEmailParameterException;
+use TwitchAnalytics\Exceptions\InvalidArgumentException;
 
 class RegisterValidator
 {

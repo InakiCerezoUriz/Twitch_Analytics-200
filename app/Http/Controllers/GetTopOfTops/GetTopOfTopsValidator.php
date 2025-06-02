@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\GetTopOfTops;
+namespace TwitchAnalytics\Http\Controllers\GetTopOfTops;
 
-use App\Exceptions\EmptyOrInvalidSinceException;
+use TwitchAnalytics\Exceptions\EmptyOrInvalidSinceException;
 
 class GetTopOfTopsValidator
 {
