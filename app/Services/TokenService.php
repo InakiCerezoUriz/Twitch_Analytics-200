@@ -13,7 +13,7 @@ class TokenService
         private readonly TokenManager $tokenManager
     ) {
     }
-    public function getToken(string $email, string $api_key): JsonResponse
+    public function getToken(string $email, string $apiKey): JsonResponse
     {
         $usuario = $this->dataBaseRepository->getTokenFromDataBase($email);
 
@@ -23,7 +23,7 @@ class TokenService
             ], 401);
         }
 
-        if ($usuario['api_key'] !== $api_key || $usuario['email'] !== $email) {
+        if ($usuario['api_key'] !== $apiKey || $usuario['email'] !== $email) {
             return new JsonResponse([
                 'error' => 'Unauthorized. API access token is invalid.',
             ], 401);

@@ -28,13 +28,13 @@ class TokenValidator
         return $sanitizedEmail;
     }
 
-    public function validateApiKey(?string $api_key): string
+    public function validateApiKey(?string $apiKey): string
     {
-        if (!isset($api_key)) {
+        if (!isset($apiKey)) {
             throw new EmptyApiKeyException();
         }
 
-        $sanitizedApiKey = strip_tags($api_key);
+        $sanitizedApiKey = strip_tags($apiKey);
         $sanitizedApiKey = htmlspecialchars($sanitizedApiKey, ENT_QUOTES | ENT_HTML5, 'UTF-8');
 
         if (empty($sanitizedApiKey)) {

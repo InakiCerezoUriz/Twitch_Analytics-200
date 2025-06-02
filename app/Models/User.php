@@ -6,27 +6,27 @@ class User
 {
     private string $id;
     private string $login;
-    private string $display_name;
+    private string $displayName;
     private string $type;
-    private string $broadcaster_type;
+    private string $broadcasterType;
     private string $description;
-    private string $profile_image_url;
-    private string $offline_image_url;
-    private string $view_count;
-    private string $created_at;
+    private string $profileImageUrl;
+    private string $offlineImageUrl;
+    private string $viewCount;
+    private string $createdAt;
 
     public function __construct(array $data)
     {
-        $this->id                = $data['id'];
-        $this->login             = $data['login'];
-        $this->display_name      = $data['display_name'];
-        $this->type              = $data['type'];
-        $this->broadcaster_type  = $data['broadcaster_type'];
-        $this->description       = $data['description'];
-        $this->profile_image_url = $data['profile_image_url'];
-        $this->offline_image_url = $data['offline_image_url'];
-        $this->view_count        = $data['view_count'];
-        $this->created_at        = $data['created_at'];
+        $this->id              = $data['id'];
+        $this->login           = $data['login'];
+        $this->displayName     = $data['display_name'];
+        $this->type            = $data['type'];
+        $this->broadcasterType = $data['broadcaster_type'];
+        $this->description     = $data['description'];
+        $this->profileImageUrl = $data['profile_image_url'];
+        $this->offlineImageUrl = $data['offline_image_url'];
+        $this->viewCount       = $data['view_count'];
+        $this->createdAt       = $data['created_at'];
     }
 
     public function getInfo(): array
@@ -34,14 +34,14 @@ class User
         return [
             'id'                => $this->id,
             'login'             => $this->login,
-            'display_name'      => $this->display_name,
+            'display_name'      => $this->displayName,
             'type'              => $this->type,
-            'broadcaster_type'  => $this->broadcaster_type,
+            'broadcaster_type'  => $this->broadcasterType,
             'description'       => $this->description,
-            'profile_image_url' => $this->profile_image_url,
-            'offline_image_url' => $this->offline_image_url,
-            'view_count'        => $this->view_count,
-            'created_at'        => $this->created_at,
+            'profile_image_url' => $this->profileImageUrl,
+            'offline_image_url' => $this->offlineImageUrl,
+            'view_count'        => $this->viewCount,
+            'created_at'        => $this->createdAt,
         ];
     }
 }
