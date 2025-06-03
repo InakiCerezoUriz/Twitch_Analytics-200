@@ -2,8 +2,8 @@
 
 namespace TwitchAnalytics\Tests\Integration\Http\Controllers\GetStreams;
 
-use Illuminate\Http\JsonResponse;
-use TwitchAnalytics\Services\GetStreamsService;
+use TwitchAnalytics\Infrastructure\TokenManager;
+use TwitchAnalytics\Interfaces\TwitchApiRepositoryInterface;
 use TwitchAnalytics\Tests\TestCase;
 
 class GetStreamsControllerTest extends TestCase
@@ -28,19 +28,25 @@ class GetStreamsControllerTest extends TestCase
     /**
      * @test
      */
-    public function calledGetStreamsReturns200(): void
+    public function givenInvalidTwitchTokenReturns401(): void
     {
-        $mockResponse = new JsonResponse([
-            'title',
-            'user_name',
-        ], 200);
-
-        $mockService = \Mockery::mock(GetStreamsService::class);
-        $mockService->shouldReceive('getStreams')
+        $mockTokenManager = \Mockery::mock(TokenManager::class);
+        $mockTokenManager->shouldReceive('getToken')
             ->once()
-            ->andReturn($mockResponse);
+            ->andReturn('invalid-token');
 
-        $this->app->instance(GetStreamsService::class, $mockService);
+        $mockTokenManager->shouldReceive('tokenActive')
+            ->once()
+            ->andReturn(true);
+
+        $mockTwitchApiRepo = \Mockery::mock(TwitchApiRepositoryInterface::class);
+        $mockTwitchApiRepo->shouldReceive('getStreamsFromTwitchApi')
+            ->once()
+            ->with('invalid-token')
+            ->andReturn([[], 401]);
+
+        $this->app->instance(TokenManager::class, $mockTokenManager);
+        $this->app->instance(TwitchApiRepositoryInterface::class, $mockTwitchApiRepo);
 
         $response = $this->call(
             'GET',
@@ -50,10 +56,61 @@ class GetStreamsControllerTest extends TestCase
             [],
             ['HTTP_AUTHORIZATION' => 'Bearer 8ac4f576cf1297671c3acd79bd7aa344']
         );
-        $response->assertStatus(200);
+
+        $response->assertStatus(401);
         $response->assertJson([
-            'title',
-            'user_name',
+            'error' => 'Unauthorized. Twitch access token is invalid or has expired.',
+        ]);
+    }
+
+    /**
+     * @test
+     */
+    public function calledGetStreamsReturns200(): void
+    {
+        $streamMock = \Mockery::mock();
+        $streamMock->shouldReceive('getStream')
+            ->once()
+            ->andReturn([
+                'title'     => 'title',
+                'user_name' => 'user_name',
+            ]);
+
+        $mockResponse = [ $streamMock ];
+
+        $mockTokenManager = \Mockery::mock(TokenManager::class);
+        $mockTokenManager->shouldReceive('getToken')
+            ->once()
+            ->andReturn('valid-token');
+
+        $mockTokenManager->shouldReceive('tokenActive')
+            ->once()
+            ->andReturn(true);
+
+        $mockTwitchApiRepo = \Mockery::mock(TwitchApiRepositoryInterface::class);
+        $mockTwitchApiRepo->shouldReceive('getStreamsFromTwitchApi')
+            ->once()
+            ->with('valid-token')
+            ->andReturn([$mockResponse, 200]);
+
+        $this->app->instance(TokenManager::class, $mockTokenManager);
+        $this->app->instance(TwitchApiRepositoryInterface::class, $mockTwitchApiRepo);
+
+        $response = $this->call(
+            'GET',
+            '/analytics/streams',
+            [],
+            [],
+            [],
+            ['HTTP_AUTHORIZATION' => 'Bearer 8ac4f576cf1297671c3acd79bd7aa344']
+        );
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            '*' => [
+                'title',
+                'user_name',
+            ],
         ]);
     }
 }
