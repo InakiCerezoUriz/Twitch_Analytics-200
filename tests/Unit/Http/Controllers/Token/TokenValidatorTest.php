@@ -1,6 +1,6 @@
 <?php
 
-namespace TwitchAnalytics\Tests\Http\Controllers\Token;
+namespace TwitchAnalytics\Tests\Unit\Http\Controllers\Token;
 
 use PHPUnit\Framework\TestCase;
 use TwitchAnalytics\Exceptions\EmptyApiKeyException;

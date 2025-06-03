@@ -1,6 +1,6 @@
 <?php
 
-namespace TwitchAnalytics\Tests\Http\Controllers\GetUserById;
+namespace TwitchAnalytics\Tests\Unit\Http\Controllers\GetUserById;
 
 use PHPUnit\Framework\TestCase;
 use TwitchAnalytics\Exceptions\EmptyOrInvalidIdException;

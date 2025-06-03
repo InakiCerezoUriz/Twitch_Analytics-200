@@ -1,6 +1,6 @@
 <?php
 
-namespace TwitchAnalytics\Tests\Http\Controllers\GetTopOfTops;
+namespace TwitchAnalytics\Tests\Integration\Http\Controllers\GetTopOfTops;
 
 use Illuminate\Http\JsonResponse;
 use TwitchAnalytics\Services\GetTopOfTopsService;

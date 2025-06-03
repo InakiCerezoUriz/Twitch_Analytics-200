@@ -1,6 +1,6 @@
 <?php
 
-namespace TwitchAnalytics\Tests\Http\Controllers\Token;
+namespace TwitchAnalytics\Tests\Integration\Http\Controllers\Token;
 
 use Illuminate\Http\JsonResponse;
 use Mockery;

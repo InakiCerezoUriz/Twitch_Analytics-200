@@ -1,6 +1,6 @@
 <?php
 
-namespace TwitchAnalytics\Tests\Http\Controllers\GetStreams;
+namespace TwitchAnalytics\Tests\Integration\Http\Controllers\GetStreams;
 
 use Illuminate\Http\JsonResponse;
 use TwitchAnalytics\Services\GetStreamsService;

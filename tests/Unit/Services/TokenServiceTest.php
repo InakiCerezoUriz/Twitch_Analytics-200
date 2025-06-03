@@ -1,6 +1,6 @@
 <?php
 
-namespace TwitchAnalytics\Tests\Services;
+namespace TwitchAnalytics\Tests\Unit\Services;
 
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;

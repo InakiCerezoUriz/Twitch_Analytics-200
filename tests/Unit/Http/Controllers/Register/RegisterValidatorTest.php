@@ -1,6 +1,6 @@
 <?php
 
-namespace TwitchAnalytics\Tests\Http\Controllers\Register;
+namespace TwitchAnalytics\Tests\Unit\Http\Controllers\Register;
 
 use PHPUnit\Framework\TestCase;
 use TwitchAnalytics\Exceptions\EmptyEmailParameterException;

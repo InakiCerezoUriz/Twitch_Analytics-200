@@ -1,6 +1,6 @@
 <?php
 
-namespace TwitchAnalytics\Tests\Http\Controllers\GetUserById;
+namespace TwitchAnalytics\Tests\Integration\Http\Controllers\GetUserById;
 
 use Illuminate\Http\JsonResponse;
 use TwitchAnalytics\Services\GetUserByIdService;

@@ -10,16 +10,10 @@ use TwitchAnalytics\Services\GetEnrichedStreamsService;
 
 class GetEnrichedStreamsController extends BaseController
 {
-    private GetEnrichedStreamsValidator $validatorStreams;
-    private GetEnrichedStreamsService $getEnrichedStreamsService;
-
-
     public function __construct(
-        GetEnrichedStreamsService $getEnrichedStreamsService,
-        GetEnrichedStreamsValidator $validatorStreams
+        private readonly GetEnrichedStreamsService $getEnrichedStreamsService,
+        private readonly GetEnrichedStreamsValidator $validatorStreams
     ) {
-        $this->getEnrichedStreamsService = $getEnrichedStreamsService;
-        $this->validatorStreams          = $validatorStreams;
     }
 
 
