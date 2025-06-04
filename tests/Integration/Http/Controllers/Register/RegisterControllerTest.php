@@ -3,6 +3,8 @@
 namespace TwitchAnalytics\Tests\Integration\Http\Controllers\Register;
 
 use Illuminate\Http\JsonResponse;
+use TwitchAnalytics\Interfaces\DataBaseRepositoryInterface;
+use TwitchAnalytics\Interfaces\TwitchApiRepositoryInterface;
 use TwitchAnalytics\Services\UserRegisterService;
 use TwitchAnalytics\Tests\TestCase;
 
@@ -48,17 +50,22 @@ class RegisterControllerTest extends TestCase
      */
     public function gets200WhenEmailParameterValid(): void
     {
-        $mockResponse = new JsonResponse([
-            'apiKey' => 'api_key_value',
-        ], 200);
+        $mockData = [
+            [
+                'api_key' => 'api_key_value',
+            ],
+        ];
 
-        $mockService = \Mockery::mock(UserRegisterService::class);
-        $mockService->shouldReceive('register')
+        $mockDataBaseRepo = \Mockery::mock(DataBaseRepositoryInterface::class);
+        $mockDataBaseRepo->shouldReceive('getApiKey')
             ->once()
-            ->with('test@example.com')
-            ->andReturn($mockResponse);
+            ->andReturn('api_key_value');
 
-        $this->app->instance(UserRegisterService::class, $mockService);
+        $mockDataBaseRepo->shouldReceive('updateApiKey')
+            ->once()
+            ->andReturn([$mockData, 200]);
+
+        $this->app->instance(DataBaseRepositoryInterface::class, $mockDataBaseRepo);
 
         $response = $this->call(
             'POST',
@@ -70,7 +77,7 @@ class RegisterControllerTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertJson([
-            'apiKey' => 'api_key_value',
+            'api_key' => 'api_key_value',
         ]);
     }
 }
