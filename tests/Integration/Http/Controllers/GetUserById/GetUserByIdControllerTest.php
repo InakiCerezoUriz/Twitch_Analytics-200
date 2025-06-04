@@ -3,8 +3,8 @@
 namespace TwitchAnalytics\Tests\Integration\Http\Controllers\GetUserById;
 
 use Illuminate\Http\JsonResponse;
-use TwitchAnalytics\Http\Controllers\GetUserById\GetUserByIdValidator;
 use TwitchAnalytics\Exceptions\EmptyOrInvalidIdException;
+use TwitchAnalytics\Http\Controllers\GetUserById\GetUserByIdValidator;
 use TwitchAnalytics\Services\GetUserByIdService;
 use TwitchAnalytics\Tests\TestCase;
 
