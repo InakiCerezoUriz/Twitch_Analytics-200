@@ -1,10 +1,8 @@
 <?php
 
 namespace TwitchAnalytics\Tests\Integration\Http\Controllers\Token;
-
-use Illuminate\Http\JsonResponse;
-use Mockery;
-use TwitchAnalytics\Services\TokenService;
+use TwitchAnalytics\Interfaces\DataBaseRepositoryInterface;
+use TwitchAnalytics\Infrastructure\TokenManager;
 use TwitchAnalytics\Tests\TestCase;
 
 class TokenControllerTest extends TestCase
@@ -70,20 +68,58 @@ class TokenControllerTest extends TestCase
     /**
      * @test
      */
+    public function gets401WhenUserDoesNotExist(): void
+    {
+        $mockDbRepo = \Mockery::mock(DataBaseRepositoryInterface::class);
+        $mockDbRepo->shouldReceive('getTokenFromDataBase')
+            ->once()
+            ->with('notfound@example.com')
+            ->andReturn(null);
+
+        $this->app->instance(DataBaseRepositoryInterface::class, $mockDbRepo);
+
+        $response = $this->call(
+            'POST',
+            '/token',
+            [
+                'email'   => 'notfound@example.com',
+                'api_key' => 'any-api-key',
+            ]
+        );
+
+        $response->assertStatus(401);
+        $response->assertJson([
+            'error' => 'Unauthorized. API access token is invalid.',
+        ]);
+    }
+
+    /**
+     * @test
+     */
     public function gets200WhenEmailAndApiKeyParametersAreValid(): void
     {
-        $token        = 'valid-token';
-        $mockResponse = new JsonResponse([
-            'token' => $token,
-        ], 200);
-
-        $mockService = Mockery::mock(TokenService::class);
-        $mockService->shouldReceive('getToken')
+        $mockDbRepo = \Mockery::mock(DataBaseRepositoryInterface::class);
+        $mockDbRepo->shouldReceive('getTokenFromDataBase')
             ->once()
-            ->with('test@example.com', 'valid-api-key')
-            ->andReturn($mockResponse);
+            ->with('test@example.com')
+            ->andReturn([
+                'email'            => 'test@example.com',
+                'api_key'          => 'valid-api-key',
+                'token'            => null,
+                'fechaexpiracion'  => '2099-12-31 23:59:59',
+            ]);
 
-        $this->app->instance(TokenService::class, $mockService);
+        $mockDbRepo->shouldReceive('updateUserTokenInDataBase')
+            ->once()
+            ->with(['token' => 'generated-token'], 'test@example.com');
+
+        $mockTokenManager = \Mockery::mock(TokenManager::class);
+        $mockTokenManager->shouldReceive('generarToken')
+            ->once()
+            ->andReturn(['token' => 'generated-token']);
+
+        $this->app->instance(DataBaseRepositoryInterface::class, $mockDbRepo);
+        $this->app->instance(TokenManager::class, $mockTokenManager);
 
         $response = $this->call(
             'POST',
@@ -96,7 +132,47 @@ class TokenControllerTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertJson([
-            'token' => $token,
+            'token' => 'generated-token',
         ]);
     }
+
+    /**
+     * @test
+     */
+    public function gets200WithExistingValidToken(): void
+    {
+        $mockDbRepo = \Mockery::mock(DataBaseRepositoryInterface::class);
+        $mockDbRepo->shouldReceive('getTokenFromDataBase')
+            ->once()
+            ->with('test@example.com')
+            ->andReturn([
+                'email'            => 'test@example.com',
+                'api_key'          => 'valid-api-key',
+                'token'            => 'existing-token',
+                'fechaexpiracion'  => '2099-12-31 23:59:59',
+            ]);
+
+        $mockTokenManager = \Mockery::mock(TokenManager::class);
+        $mockTokenManager->shouldNotReceive('generarToken');
+
+        $mockDbRepo->shouldNotReceive('updateUserTokenInDataBase');
+
+        $this->app->instance(DataBaseRepositoryInterface::class, $mockDbRepo);
+        $this->app->instance(TokenManager::class, $mockTokenManager);
+
+        $response = $this->call(
+            'POST',
+            '/token',
+            [
+                'email'   => 'test@example.com',
+                'api_key' => 'valid-api-key',
+            ]
+        );
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'token' => 'existing-token',
+        ]);
+    }
+
 }
