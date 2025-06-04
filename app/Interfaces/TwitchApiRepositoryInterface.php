@@ -2,6 +2,8 @@
 
 namespace TwitchAnalytics\Interfaces;
 
+use TwitchAnalytics\Models\TopStreamer;
+
 interface TwitchApiRepositoryInterface
 {
     public function getUserFromTwitchApi(string $id, string $token): array;
@@ -14,5 +16,5 @@ interface TwitchApiRepositoryInterface
 
     public function getTopGames(string $token): array;
 
-    public function getTopStreamer(array $game, string $token);
+    public function getTopStreamer(array $game, string $token): TopStreamer;
 }

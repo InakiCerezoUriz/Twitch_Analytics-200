@@ -1,6 +1,6 @@
 <?php
 
-namespace TwitchAnalytics\Tests\Services;
+namespace TwitchAnalytics\Tests\Unit\Services;
 
 use Illuminate\Http\JsonResponse;
 use PHPUnit\Framework\TestCase;

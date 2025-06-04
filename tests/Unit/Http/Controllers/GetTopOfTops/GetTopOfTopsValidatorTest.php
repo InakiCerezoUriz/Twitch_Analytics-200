@@ -1,6 +1,6 @@
 <?php
 
-namespace TwitchAnalytics\Tests\Http\Controllers\GetTopOfTops;
+namespace TwitchAnalytics\Tests\Unit\Http\Controllers\GetTopOfTops;
 
 use PHPUnit\Framework\TestCase;
 use TwitchAnalytics\Exceptions\EmptyOrInvalidSinceException;

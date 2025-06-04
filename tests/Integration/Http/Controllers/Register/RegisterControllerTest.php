@@ -1,6 +1,6 @@
 <?php
 
-namespace TwitchAnalytics\Tests\Http\Controllers\Register;
+namespace TwitchAnalytics\Tests\Integration\Http\Controllers\Register;
 
 use Illuminate\Http\JsonResponse;
 use TwitchAnalytics\Services\UserRegisterService;

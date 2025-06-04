@@ -1,6 +1,6 @@
 <?php
 
-namespace TwitchAnalytics\Tests\Http\Controllers\GetEnrichedStreams;
+namespace TwitchAnalytics\Tests\Unit\Http\Controllers\GetEnrichedStreams;
 
 use PHPUnit\Framework\TestCase;
 use TwitchAnalytics\Exceptions\InvalidLimitException;

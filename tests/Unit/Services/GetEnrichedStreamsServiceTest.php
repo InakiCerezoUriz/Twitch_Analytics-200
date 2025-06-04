@@ -1,8 +1,7 @@
 <?php
 
-namespace TwitchAnalytics\Tests\Services;
+namespace TwitchAnalytics\Tests\Unit\Services;
 
-use Illuminate\Http\JsonResponse;
 use PHPUnit\Framework\TestCase;
 use TwitchAnalytics\Infrastructure\TokenManager;
 use TwitchAnalytics\Interfaces\TwitchApiRepositoryInterface;
@@ -32,14 +31,16 @@ class GetEnrichedStreamsServiceTest extends TestCase
      */
     public function givenInvalidTokenReturns401(): void
     {
-        $this->tokenManager->method('getToken')->willReturn('not_valid_token');
-        $this->twitchApiRepository->method('getEnrichedStreamsFromTwitchApi')
+        $this->tokenManager
+            ->method('getToken')
+            ->willReturn('not_valid_token');
+        $this->twitchApiRepository
+            ->method('getEnrichedStreamsFromTwitchApi')
             ->with('not_valid_token', '3')
             ->willReturn([[], 401]);
 
         $response = $this->service->getEnriched('3');
 
-        $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(401, $response->getStatusCode());
         $this->assertEquals([
             'error' => 'Unauthorized. Twitch access token is invalid or has expired.',
@@ -51,7 +52,9 @@ class GetEnrichedStreamsServiceTest extends TestCase
      */
     public function whenTwitchApiFailsReturns500(): void
     {
-        $this->tokenManager->method('getToken')->willReturn('valid_token');
+        $this->tokenManager
+            ->method('getToken')
+            ->willReturn('valid_token');
 
         $this->twitchApiRepository
             ->method('getEnrichedStreamsFromTwitchApi')
