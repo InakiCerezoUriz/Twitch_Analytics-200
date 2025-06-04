@@ -1,8 +1,9 @@
 <?php
 
 namespace TwitchAnalytics\Tests\Integration\Http\Controllers\Token;
-use TwitchAnalytics\Interfaces\DataBaseRepositoryInterface;
+
 use TwitchAnalytics\Infrastructure\TokenManager;
+use TwitchAnalytics\Interfaces\DataBaseRepositoryInterface;
 use TwitchAnalytics\Tests\TestCase;
 
 class TokenControllerTest extends TestCase
@@ -103,10 +104,10 @@ class TokenControllerTest extends TestCase
             ->once()
             ->with('test@example.com')
             ->andReturn([
-                'email'            => 'test@example.com',
-                'api_key'          => 'valid-api-key',
-                'token'            => null,
-                'fechaexpiracion'  => '2099-12-31 23:59:59',
+                'email'           => 'test@example.com',
+                'api_key'         => 'valid-api-key',
+                'token'           => null,
+                'fechaexpiracion' => '2099-12-31 23:59:59',
             ]);
 
         $mockDbRepo->shouldReceive('updateUserTokenInDataBase')
@@ -146,10 +147,10 @@ class TokenControllerTest extends TestCase
             ->once()
             ->with('test@example.com')
             ->andReturn([
-                'email'            => 'test@example.com',
-                'api_key'          => 'valid-api-key',
-                'token'            => 'existing-token',
-                'fechaexpiracion'  => '2099-12-31 23:59:59',
+                'email'           => 'test@example.com',
+                'api_key'         => 'valid-api-key',
+                'token'           => 'existing-token',
+                'fechaexpiracion' => '2099-12-31 23:59:59',
             ]);
 
         $mockTokenManager = \Mockery::mock(TokenManager::class);
@@ -174,5 +175,4 @@ class TokenControllerTest extends TestCase
             'token' => 'existing-token',
         ]);
     }
-
 }
