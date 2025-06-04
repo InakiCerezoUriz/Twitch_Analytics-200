@@ -2,10 +2,7 @@
 
 namespace TwitchAnalytics\Tests\Integration\Http\Controllers\Register;
 
-use Illuminate\Http\JsonResponse;
 use TwitchAnalytics\Interfaces\DataBaseRepositoryInterface;
-use TwitchAnalytics\Interfaces\TwitchApiRepositoryInterface;
-use TwitchAnalytics\Services\UserRegisterService;
 use TwitchAnalytics\Tests\TestCase;
 
 class RegisterControllerTest extends TestCase
