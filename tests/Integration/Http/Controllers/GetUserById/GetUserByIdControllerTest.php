@@ -3,6 +3,8 @@
 namespace TwitchAnalytics\Tests\Integration\Http\Controllers\GetUserById;
 
 use Illuminate\Http\JsonResponse;
+use TwitchAnalytics\Http\Controllers\GetUserById\GetUserByIdValidator;
+use TwitchAnalytics\Exceptions\EmptyOrInvalidIdException;
 use TwitchAnalytics\Services\GetUserByIdService;
 use TwitchAnalytics\Tests\TestCase;
 
@@ -33,6 +35,14 @@ class GetUserByIdControllerTest extends TestCase
      */
     public function givenInvalidIdReturns400(): void
     {
+        $mockValidator = \Mockery::mock(GetUserByIdValidator::class);
+        $mockValidator->shouldReceive('validateId')
+            ->once()
+            ->with('invalid_id')
+            ->andThrow(new EmptyOrInvalidIdException());
+
+        $this->app->instance(GetUserByIdValidator::class, $mockValidator);
+
         $response = $this->call(
             'GET',
             '/analytics/user',
