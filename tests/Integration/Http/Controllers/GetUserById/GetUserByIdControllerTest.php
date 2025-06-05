@@ -185,11 +185,16 @@ class GetUserByIdControllerTest extends TestCase
             ->once()
             ->with('valid_id')
             ->andReturn($mockResponse['data'][0]);
+        $mockDataBase->shouldNotReceive('insertUserInDataBase');
+
+        $mockTwitchApiRepo = \Mockery::mock(TwitchApiRepositoryInterface::class);
+        $mockTwitchApiRepo->shouldNotReceive('getUserFromTwitchApi');
 
 
         $this->app->instance(TokenManager::class, $mockTokenManager);
         $this->app->instance(GetUserByIdValidator::class, $mockUserValidator);
         $this->app->instance(DataBaseRepositoryInterface::class, $mockDataBase);
+        $this->app->instance(TwitchApiRepositoryInterface::class, $mockTwitchApiRepo);
 
         $response = $this->call(
             'GET',
